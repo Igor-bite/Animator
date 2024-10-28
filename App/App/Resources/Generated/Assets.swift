@@ -40,6 +40,7 @@ internal enum Asset {
   internal static let shapes = ImageAsset(name: "shapes")
   internal static let square = ImageAsset(name: "square")
   internal static let triangle = ImageAsset(name: "triangle")
+  internal static let launchScreen = ImageAsset(name: "launch-screen")
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name
 
