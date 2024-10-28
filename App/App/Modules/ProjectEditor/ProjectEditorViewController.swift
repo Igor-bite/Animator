@@ -2,6 +2,7 @@
 
 import UIKit
 import IKUI
+import IKUtils
 import Combine
 
 protocol ProjectEditorViewInput: AnyObject {}
@@ -25,5 +26,16 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   override func viewDidLoad() {
     super.viewDidLoad()
     view.backgroundColor = Colors.accent
+
+    addSwiftUiView(view: PaperView(), layout: { view in
+      view.translatesAutoresizingMaskIntoConstraints = false
+
+      NSLayoutConstraint.activate([
+        view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
+        view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
+        view.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+        view.heightAnchor.constraint(equalToConstant: 600)
+      ])
+    })
   }
 }

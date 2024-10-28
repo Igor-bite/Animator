@@ -10,6 +10,8 @@
 		0A1A25E12CD006F800EABC95 /* IKUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1A25E02CD006F800EABC95 /* IKUI */; };
 		0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */; };
 		0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */; };
+		0A1A25E92CD02CA600EABC95 /* PaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E82CD02CA600EABC95 /* PaperView.swift */; };
+		0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E62CD02CA600EABC95 /* Paper.metal */; };
 		0A3C66202CCE54F7008198BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C661F2CCE54F7008198BC /* Assets.xcassets */; };
 		0A3C66962CCE5765008198BC /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C667A2CCE5765008198BC /* Assets.swift */; };
 		0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */; };
@@ -26,6 +28,8 @@
 		0A1A25DF2CD006A000EABC95 /* IKUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUI; path = ../Packages/IKUI; sourceTree = SOURCE_ROOT; };
 		0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorCoordinator.swift; sourceTree = "<group>"; };
 		0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorViewModel.swift; sourceTree = "<group>"; };
+		0A1A25E62CD02CA600EABC95 /* Paper.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Paper.metal; sourceTree = "<group>"; };
+		0A1A25E82CD02CA600EABC95 /* PaperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperView.swift; sourceTree = "<group>"; };
 		0A3C66132CCE54F6008198BC /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A3C661F2CCE54F7008198BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A3C66242CCE54F7008198BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -51,6 +55,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A1A25EB2CD02D0700EABC95 /* PaperView */ = {
+			isa = PBXGroup;
+			children = (
+				0A1A25E62CD02CA600EABC95 /* Paper.metal */,
+				0A1A25E82CD02CA600EABC95 /* PaperView.swift */,
+			);
+			path = PaperView;
+			sourceTree = "<group>";
+		};
 		0A3C660A2CCE54F6008198BC = {
 			isa = PBXGroup;
 			children = (
@@ -94,6 +107,7 @@
 		0A3C663F2CCE56D0008198BC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				0A1A25EB2CD02D0700EABC95 /* PaperView */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -260,6 +274,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */,
+				0A1A25E92CD02CA600EABC95 /* PaperView.swift in Sources */,
+				0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */,
 				0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */,
 				0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */,
 				0A3C66962CCE5765008198BC /* Assets.swift in Sources */,
