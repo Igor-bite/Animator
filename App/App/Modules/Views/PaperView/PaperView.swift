@@ -3,11 +3,15 @@
 import SwiftUI
 
 public struct PaperView: View {
+  @Environment(\.colorScheme) var colorScheme
+
   public init() {}
   
   public var body: some View {
     RoundedRectangle(cornerRadius: 20)
-      .fill(.paper())
+      .fill(
+        .paper(isLightTheme: colorScheme == .light)
+      )
   }
 }
 
@@ -16,10 +20,11 @@ public struct PaperView: View {
 }
 
 extension ShapeStyle where Self == AnyShapeStyle {
-  static func paper() -> Self {
+  static func paper(isLightTheme: Bool) -> Self {
     AnyShapeStyle(
       ShaderLibrary.default.paper(
-        .boundingRect
+        .boundingRect,
+        .float(isLightTheme ? 1 : 0)
       )
     )
   }

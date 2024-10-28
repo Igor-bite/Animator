@@ -102,7 +102,7 @@ float3 bumpMap(float2 uv, float height, half4 col){
 // MARK: - Shader
 
 [[ stitchable ]]
-half4 paper(float2 position, float4 bounds) {
+half4 paper(float2 position, float4 bounds, float isLightTheme) {
   float2 p = position / max(bounds.z, bounds.w);
   float2 coords = position / bounds.zw;
 
@@ -130,7 +130,12 @@ half4 paper(float2 position, float4 bounds) {
   edge *= secondaryEdge;
   col = col * edge;
 
-  float ambient_color = 0.9;
+  float ambient_color = 0.0;
+  if (isLightTheme == 1) {
+    ambient_color = 0.1;
+  } else {
+    ambient_color = 0.9;
+  }
   float3 ambient = float3(ambient_color, ambient_color, ambient_color);
   Vibe vibe;
   vibe.a0 = ambient;

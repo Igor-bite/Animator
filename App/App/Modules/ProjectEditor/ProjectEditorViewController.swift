@@ -25,7 +25,7 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    view.backgroundColor = Colors.accent
+    view.backgroundColor = Colors.background
 
     addSwiftUiView(view: PaperView(), layout: { view in
       view.translatesAutoresizingMaskIntoConstraints = false
