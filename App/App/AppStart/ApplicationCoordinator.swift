@@ -12,12 +12,14 @@ final class ApplicationCoordinator: ApplicationCoordinating {
   private let serviceLocator = ServiceLocator()
 
   func start() {
-    showRootScreen()
+    showProjectEditorScreen()
     window.rootViewController = navigationController
     window.makeKeyAndVisible()
   }
 
-  private func showRootScreen() {
-    navigationController.viewControllers = [RootViewController()]
+  private func showProjectEditorScreen() {
+    ProjectEditorCoordinator(
+      navigationController: navigationController
+    ).start()
   }
 }

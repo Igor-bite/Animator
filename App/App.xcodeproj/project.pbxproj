@@ -8,9 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		0A1A25E12CD006F800EABC95 /* IKUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1A25E02CD006F800EABC95 /* IKUI */; };
+		0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */; };
+		0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */; };
 		0A3C66202CCE54F7008198BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C661F2CCE54F7008198BC /* Assets.xcassets */; };
 		0A3C66962CCE5765008198BC /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C667A2CCE5765008198BC /* Assets.swift */; };
-		0A3C66982CCE5812008198BC /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66322CCE56D0008198BC /* RootViewController.swift */; };
+		0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */; };
 		0A3C66992CCE5829008198BC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C66442CCE56D0008198BC /* LaunchScreen.storyboard */; };
 		0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66422CCE56D0008198BC /* ApplicationCoordinator.swift */; };
 		0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66412CCE56D0008198BC /* AppDelegate.swift */; };
@@ -22,10 +24,12 @@
 /* Begin PBXFileReference section */
 		0A1A25DE2CCFFFFD00EABC95 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		0A1A25DF2CD006A000EABC95 /* IKUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUI; path = ../Packages/IKUI; sourceTree = SOURCE_ROOT; };
+		0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorCoordinator.swift; sourceTree = "<group>"; };
+		0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorViewModel.swift; sourceTree = "<group>"; };
 		0A3C66132CCE54F6008198BC /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A3C661F2CCE54F7008198BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A3C66242CCE54F7008198BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0A3C66322CCE56D0008198BC /* RootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewController.swift; sourceTree = "<group>"; };
+		0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorViewController.swift; sourceTree = "<group>"; };
 		0A3C66412CCE56D0008198BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0A3C66422CCE56D0008198BC /* ApplicationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationCoordinator.swift; sourceTree = "<group>"; };
 		0A3C66432CCE56D0008198BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -77,12 +81,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		0A3C66352CCE56D0008198BC /* Root */ = {
+		0A3C66352CCE56D0008198BC /* ProjectEditor */ = {
 			isa = PBXGroup;
 			children = (
-				0A3C66322CCE56D0008198BC /* RootViewController.swift */,
+				0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */,
+				0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */,
+				0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */,
 			);
-			path = Root;
+			path = ProjectEditor;
 			sourceTree = "<group>";
 		};
 		0A3C663F2CCE56D0008198BC /* Views */ = {
@@ -95,7 +101,7 @@
 		0A3C66402CCE56D0008198BC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				0A3C66352CCE56D0008198BC /* Root */,
+				0A3C66352CCE56D0008198BC /* ProjectEditor */,
 				0A3C663F2CCE56D0008198BC /* Views */,
 			);
 			path = Modules;
@@ -255,9 +261,11 @@
 			files = (
 				0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */,
 				0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */,
-				0A3C66982CCE5812008198BC /* RootViewController.swift in Sources */,
+				0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */,
 				0A3C66962CCE5765008198BC /* Assets.swift in Sources */,
 				0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */,
+				0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */,
+				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
