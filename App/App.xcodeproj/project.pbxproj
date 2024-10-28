@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A1A25E12CD006F800EABC95 /* IKUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1A25E02CD006F800EABC95 /* IKUI */; };
 		0A3C66202CCE54F7008198BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C661F2CCE54F7008198BC /* Assets.xcassets */; };
 		0A3C66962CCE5765008198BC /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C667A2CCE5765008198BC /* Assets.swift */; };
 		0A3C66982CCE5812008198BC /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66322CCE56D0008198BC /* RootViewController.swift */; };
@@ -20,6 +21,7 @@
 
 /* Begin PBXFileReference section */
 		0A1A25DE2CCFFFFD00EABC95 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		0A1A25DF2CD006A000EABC95 /* IKUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUI; path = ../Packages/IKUI; sourceTree = SOURCE_ROOT; };
 		0A3C66132CCE54F6008198BC /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A3C661F2CCE54F7008198BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A3C66242CCE54F7008198BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -37,6 +39,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0A1A25E12CD006F800EABC95 /* IKUI in Frameworks */,
 				0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -136,6 +139,7 @@
 		0A3C66B12CCE6786008198BC /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				0A1A25DF2CD006A000EABC95 /* IKUI */,
 				0A3C66B52CCE67AC008198BC /* IKUtils */,
 			);
 			path = Packages;
@@ -167,6 +171,7 @@
 			name = App;
 			packageProductDependencies = (
 				0A3C66B82CCE67C2008198BC /* IKUtils */,
+				0A1A25E02CD006F800EABC95 /* IKUI */,
 			);
 			productName = App;
 			productReference = 0A3C66132CCE54F6008198BC /* App.app */;
@@ -488,6 +493,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0A1A25E02CD006F800EABC95 /* IKUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IKUI;
+		};
 		0A3C66B82CCE67C2008198BC /* IKUtils */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IKUtils;

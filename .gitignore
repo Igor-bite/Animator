@@ -119,7 +119,6 @@ fastlane/test_output
 iOSInjectionProject/
 
 ### SwiftPackageManager ###
-Packages
 xcuserdata
 
 
@@ -141,3 +140,4 @@ xcuserdata
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,xcode,swift,swiftpackagemanager,swiftpm
 /App/App.xcodeproj/project.xcworkspace
+*.xcworkspacedata
