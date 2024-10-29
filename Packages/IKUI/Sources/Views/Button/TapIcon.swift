@@ -9,6 +9,8 @@ public final class TapIcon: UIView {
   private var size: Size?
   private var icon: UIImage?
   private var tint: UIColor?
+  private var selectedTint: UIColor?
+  private var action: Action?
 
   override public var intrinsicContentSize: CGSize {
     CGSize(squareDimension: size?.iconSize ?? 0)
@@ -25,6 +27,11 @@ public final class TapIcon: UIView {
   public var isEnabled: Bool {
     get { iconButton.isEnabled }
     set { iconButton.isEnabled = newValue }
+  }
+
+  public var isSelected: Bool {
+    get { iconButton.isSelected }
+    set { iconButton.isSelected = newValue }
   }
 
   // MARK: UI
@@ -44,14 +51,17 @@ public final class TapIcon: UIView {
   public init(
     size: SizeType,
     icon: UIImage,
-    tint: UIColor = Colors.foreground
+    tint: UIColor = Colors.foreground,
+    selectedTint: UIColor? = nil
   ) {
     self.size = Size(type: size)
     self.icon = icon
     self.tint = tint
+    self.selectedTint = selectedTint ?? tint
     super.init(frame: .zero)
     
     setupLayout()
+    iconButton.addTarget(self, action: #selector(didTap), for: .touchUpInside)
   }
 
   @available(*, unavailable)
@@ -84,13 +94,19 @@ public final class TapIcon: UIView {
   public func setIcon(
     size: SizeType,
     icon: UIImage,
-    tint: UIColor = Colors.foreground
+    tint: UIColor = Colors.foreground,
+    selectedTint: UIColor? = nil
   ) {
     self.size = Size(type: size)
     self.icon = icon
     self.tint = tint
+    self.selectedTint = selectedTint ?? tint
 
     updateButton()
+  }
+
+  public func addAction(action: @escaping Action) {
+    self.action = action
   }
 
   private func setupConstraints() {
@@ -104,8 +120,8 @@ public final class TapIcon: UIView {
 
   private func updateButton() {
     updateImage()
-    invalidateIntrinsicContentSize()
     iconButton.isHighlighted = false
+    invalidateIntrinsicContentSize()
   }
 
   private func updateImage() {
@@ -115,14 +131,18 @@ public final class TapIcon: UIView {
     else { return }
 
     iconButton.setImage(icon, for: .normal)
-    iconButton.tintColor = tint
+    updateTintColor()
   }
 
-  public func addAction(action: @escaping () -> Void) {
-    iconButton.removeTarget(nil, action: nil, for: .allEvents)
-    iconButton.addAction {
-      action()
-    }
+  private func updateTintColor() {
+    iconButton.tintColor = isSelected ? selectedTint : tint
+  }
+
+  @objc
+  private func didTap() {
+    isSelected.toggle()
+    updateTintColor()
+    action?()
   }
 
   // MARK: Tap
