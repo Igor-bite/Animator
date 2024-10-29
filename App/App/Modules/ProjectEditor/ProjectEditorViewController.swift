@@ -1,6 +1,7 @@
 // Created by Igor Klyuzhev in 2024
 
 import UIKit
+import SnapKit
 import IKUI
 import IKUtils
 import Combine
@@ -11,12 +12,34 @@ protocol ProjectEditorViewOutput: AnyObject {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
 }
 
+enum ToolType: String {
+  case pencil
+  case brush
+  case eraser
+}
+
 final class ProjectEditorViewController: UIViewController, ProjectEditorViewInput {
   private let viewModel: ProjectEditorViewOutput
+  private var paperView: UIView?
   private lazy var someButton = TapIcon(
     size: .large(),
     icon: Asset.eraser.image
   ).autoLayout()
+
+  private lazy var toolsButtons: SelectableIconsGroup = {
+    let icons: [SelectableIconsGroupModel.IconModel] = [
+      .init(id: ToolType.pencil.rawValue, icon: Asset.pencil.image),
+      .init(id: ToolType.brush.rawValue, icon: Asset.brush.image),
+      .init(id: ToolType.eraser.rawValue, icon: Asset.eraser.image)
+    ]
+    let model = SelectableIconsGroupModel(
+      icons: icons,
+      intiallySelectedId: ToolType.pencil.rawValue
+    )
+    let view = SelectableIconsGroup(model: model)
+    view.delegate = self
+    return view
+  }()
 
   init(viewModel: ProjectEditorViewOutput) {
     self.viewModel = viewModel
@@ -34,22 +57,32 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   }
 
   private func setupUI() {
-    view.addSubview(someButton)
-    NSLayoutConstraint.activate([
-      someButton.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 4),
-      someButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-    ])
+    view.addSubviews(someButton, toolsButtons)
 
+    someButton.snp.makeConstraints { make in
+      make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(4)
+      make.centerX.equalToSuperview()
+    }
 
-    addSwiftUiView(view: PaperView(), layout: { view in
-      view.autoLayout()
-
-      NSLayoutConstraint.activate([
-        view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 16),
-        view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -16),
-        view.topAnchor.constraint(equalTo: self.someButton.bottomAnchor, constant: 8),
-        view.heightAnchor.constraint(equalToConstant: 600)
-      ])
+    let paperView = addSwiftUiView(view: PaperView(), layout: { view in
+      view.snp.makeConstraints { make in
+        make.leading.equalToSuperview().offset(16)
+        make.trailing.equalToSuperview().offset(-16)
+        make.top.equalTo(someButton.snp.bottom).offset(8)
+        make.height.equalTo(600)
+      }
     })
+    self.paperView = paperView
+
+    toolsButtons.snp.makeConstraints { make in
+      make.top.equalTo(paperView.snp.bottom).offset(16)
+      make.centerX.equalToSuperview()
+    }
+  }
+}
+
+extension ProjectEditorViewController: SelectableIconsGroupDelegate {
+  func didSelect(icon: SelectableIconsGroupModel.IconModel) {
+    print(ToolType(rawValue: icon.id))
   }
 }

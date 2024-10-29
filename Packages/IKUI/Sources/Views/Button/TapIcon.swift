@@ -31,7 +31,10 @@ public final class TapIcon: UIView {
 
   public var isSelected: Bool {
     get { iconButton.isSelected }
-    set { iconButton.isSelected = newValue }
+    set {
+      iconButton.isSelected = newValue
+      updateTintColor()
+    }
   }
 
   // MARK: UI

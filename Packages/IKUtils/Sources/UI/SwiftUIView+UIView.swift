@@ -8,9 +8,12 @@ extension UIViewController {
     view: any View,
     layout: (_ view: UIView) -> Void,
     shouldAddAsSubviewToRootView: Bool = true
-  ) {
+  ) -> UIView {
     let viewController = view.wrappedInHostingController
-    guard let swiftuiView = viewController.view else { return }
+    guard let swiftuiView = viewController.view else {
+      assertionFailure()
+      return UIView()
+    }
     swiftuiView.backgroundColor = .clear
     addChild(viewController)
     if shouldAddAsSubviewToRootView {
@@ -18,5 +21,6 @@ extension UIViewController {
     }
     layout(swiftuiView)
     viewController.didMove(toParent: self)
+    return swiftuiView
   }
 }
