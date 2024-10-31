@@ -20,7 +20,6 @@
 		0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66422CCE56D0008198BC /* ApplicationCoordinator.swift */; };
 		0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66412CCE56D0008198BC /* AppDelegate.swift */; };
 		0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */; };
-		0A3C66B62CCE67AC008198BC /* IKUtils in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C66B52CCE67AC008198BC /* IKUtils */; };
 		0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3C66B82CCE67C2008198BC /* IKUtils */; };
 		0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F342CD3964A009790AC /* PaperUIView.swift */; };
 		0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */; };
@@ -29,7 +28,6 @@
 
 /* Begin PBXFileReference section */
 		0A1A25DE2CCFFFFD00EABC95 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		0A1A25DF2CD006A000EABC95 /* IKUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUI; path = ../Packages/IKUI; sourceTree = SOURCE_ROOT; };
 		0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorCoordinator.swift; sourceTree = "<group>"; };
 		0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorViewModel.swift; sourceTree = "<group>"; };
 		0A1A25E62CD02CA600EABC95 /* Paper.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Paper.metal; sourceTree = "<group>"; };
@@ -43,10 +41,12 @@
 		0A3C66432CCE56D0008198BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		0A3C667A2CCE5765008198BC /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
-		0A3C66B52CCE67AC008198BC /* IKUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUtils; path = ../../Packages/IKUtils; sourceTree = "<group>"; };
 		0AD20F342CD3964A009790AC /* PaperUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperUIView.swift; sourceTree = "<group>"; };
 		0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopToolsGroup.swift; sourceTree = "<group>"; };
 		0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomToolsGroup.swift; sourceTree = "<group>"; };
+		0AD20F3A2CD41E7B009790AC /* IKDrawing */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = IKDrawing; sourceTree = "<group>"; };
+		0AD20F3B2CD41E7B009790AC /* IKUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = IKUI; sourceTree = "<group>"; };
+		0AD20F3C2CD41E7B009790AC /* IKUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = IKUtils; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,8 +170,9 @@
 		0A3C66B12CCE6786008198BC /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				0A1A25DF2CD006A000EABC95 /* IKUI */,
-				0A3C66B52CCE67AC008198BC /* IKUtils */,
+				0AD20F3A2CD41E7B009790AC /* IKDrawing */,
+				0AD20F3B2CD41E7B009790AC /* IKUI */,
+				0AD20F3C2CD41E7B009790AC /* IKUtils */,
 			);
 			path = Packages;
 			sourceTree = "<group>";
@@ -250,7 +251,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A3C66B62CCE67AC008198BC /* IKUtils in Resources */,
 				0A3C66202CCE54F7008198BC /* Assets.xcassets in Resources */,
 				0A3C66992CCE5829008198BC /* LaunchScreen.storyboard in Resources */,
 			);
