@@ -7,8 +7,12 @@ protocol ApplicationCoordinating {
 }
 
 final class ApplicationCoordinator: ApplicationCoordinating {
-  private lazy var window = UIWindow(frame: UIScreen.main.bounds)
-  private lazy var navigationController = UINavigationController()
+  private let window = UIWindow(frame: UIScreen.main.bounds)
+  private let navigationController = {
+    let navigationController = UINavigationController()
+    navigationController.isNavigationBarHidden = true
+    return navigationController
+  }()
   private let serviceLocator = ServiceLocator()
 
   func start() {

@@ -4,20 +4,26 @@ import UIKit
 import IKUtils
 
 public final class TapIcon: UIView {
+  public enum SelectionType {
+    case tint(UIColor)
+    case icon(UIImage)
+  }
+
   // MARK: Properties
 
-  private var size: Size?
-  private var icon: UIImage?
-  private var tint: UIColor?
-  private var selectedTint: UIColor?
+  private let size: Size
+  private let icon: UIImage
+  private let tint: UIColor
+  private let selectionType: SelectionType
+  private let renderingMode: UIImage.RenderingMode
   private var action: Action?
 
   override public var intrinsicContentSize: CGSize {
-    CGSize(squareDimension: size?.iconSize ?? 0)
+    CGSize(squareDimension: size.iconSize)
   }
 
   override public func sizeThatFits(_ size: CGSize) -> CGSize {
-    let contentSize = CGSize(squareDimension: self.size?.iconSize ?? 0)
+    let contentSize = CGSize(squareDimension: self.size.iconSize)
     return CGSize(
       width: min(contentSize.width, size.width),
       height: min(contentSize.height, size.height)
@@ -33,7 +39,7 @@ public final class TapIcon: UIView {
     get { iconButton.isSelected }
     set {
       iconButton.isSelected = newValue
-      updateTintColor()
+      updateSelection()
     }
   }
 
@@ -45,22 +51,18 @@ public final class TapIcon: UIView {
 
   // MARK: Init
 
-
-  public init() {
-    super.init(frame: .zero)
-    setupLayout()
-  }
-
   public init(
     size: SizeType,
     icon: UIImage,
     tint: UIColor = Colors.foreground,
-    selectedTint: UIColor? = nil
+    selectionType: SelectionType = .tint(Colors.accent),
+    renderingMode: UIImage.RenderingMode = .alwaysTemplate
   ) {
     self.size = Size(type: size)
     self.icon = icon
     self.tint = tint
-    self.selectedTint = selectedTint ?? tint
+    self.selectionType = selectionType
+    self.renderingMode = renderingMode
     super.init(frame: .zero)
     
     setupLayout()
@@ -82,32 +84,6 @@ public final class TapIcon: UIView {
 
   // MARK: Update
 
-  public func sendActions(for event: UIControl.Event) {
-    iconButton.sendActions(for: event)
-  }
-
-  public func addAnimationLayerToImage(_ animation: CAAnimation, key: String? = nil) {
-    iconButton.imageView?.layer.add(animation, forKey: key)
-  }
-
-  public func setUserInteraction(enabled: Bool) {
-    iconButton.isUserInteractionEnabled = enabled
-  }
-
-  public func setIcon(
-    size: SizeType,
-    icon: UIImage,
-    tint: UIColor = Colors.foreground,
-    selectedTint: UIColor? = nil
-  ) {
-    self.size = Size(type: size)
-    self.icon = icon
-    self.tint = tint
-    self.selectedTint = selectedTint ?? tint
-
-    updateButton()
-  }
-
   public func addAction(action: @escaping Action) {
     self.action = action
   }
@@ -122,36 +98,38 @@ public final class TapIcon: UIView {
   }
 
   private func updateButton() {
-    updateImage()
+    updateSelection()
     iconButton.isHighlighted = false
     invalidateIntrinsicContentSize()
   }
 
-  private func updateImage() {
-    let iconSize = CGSize(squareDimension: size?.iconSize ?? .zero)
-    guard
-      let icon = icon?.scaledImage(toSize: iconSize).withRenderingMode(.alwaysTemplate)
-    else { return }
+  private func updateSelection() {
+    switch selectionType {
+    case .tint(let selectedTint):
+      let iconSize = CGSize(squareDimension: size.iconSize)
+      let scaledIcon = icon.scaledImage(toSize: iconSize).withRenderingMode(renderingMode)
 
-    iconButton.setImage(icon, for: .normal)
-    updateTintColor()
-  }
+      iconButton.setImage(scaledIcon, for: .normal)
+      iconButton.tintColor = isSelected ? selectedTint : tint
+    case .icon(let selectedIcon):
+      let resolvedIcon = isSelected ? selectedIcon : icon
+      let iconSize = CGSize(squareDimension: size.iconSize)
+      let scaledIcon = resolvedIcon.scaledImage(toSize: iconSize).withRenderingMode(renderingMode)
 
-  private func updateTintColor() {
-    iconButton.tintColor = isSelected ? selectedTint : tint
+      iconButton.setImage(scaledIcon, for: .normal)
+      iconButton.tintColor = tint
+    }
   }
 
   @objc
   private func didTap() {
     isSelected.toggle()
-    updateTintColor()
     action?()
   }
 
   // MARK: Tap
 
   override public func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-    guard let size else { return false }
     let selfPoint = convert(point, to: self)
     let area = iconButton.bounds
       .inset(

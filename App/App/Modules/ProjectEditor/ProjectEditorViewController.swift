@@ -23,7 +23,8 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   private var paperView: UIView?
   private lazy var someButton = TapIcon(
     size: .large(),
-    icon: Asset.eraser.image
+    icon: Asset.eraser.image,
+    selectionType: .icon(Asset.bin.image)
   ).autoLayout()
 
   private lazy var toolsButtons: SelectableIconsGroup = {
@@ -60,7 +61,7 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     view.addSubviews(someButton, toolsButtons)
 
     someButton.snp.makeConstraints { make in
-      make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(4)
+      make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
       make.centerX.equalToSuperview()
     }
 
@@ -68,14 +69,14 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
       view.snp.makeConstraints { make in
         make.leading.equalToSuperview().offset(16)
         make.trailing.equalToSuperview().offset(-16)
-        make.top.equalTo(someButton.snp.bottom).offset(8)
-        make.height.equalTo(600)
+        make.top.equalTo(someButton.snp.bottom).offset(24)
+        make.bottom.equalTo(toolsButtons.snp.top).offset(-24)
       }
     })
     self.paperView = paperView
 
     toolsButtons.snp.makeConstraints { make in
-      make.top.equalTo(paperView.snp.bottom).offset(16)
+      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
       make.centerX.equalToSuperview()
     }
   }

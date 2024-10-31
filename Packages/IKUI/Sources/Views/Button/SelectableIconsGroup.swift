@@ -87,8 +87,7 @@ public final class SelectableIconsGroup: UIView {
     let icon = TapIcon(
       size: model.size,
       icon: iconModel.icon,
-      tint: model.tint,
-      selectedTint: model.selectedTint
+      tint: model.tint
     )
     if iconModel.id == model.intiallySelectedId {
       icon.isSelected = true
