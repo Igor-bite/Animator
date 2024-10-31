@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 
 extension SwiftUI.View {
-  var wrappedInHostingController: UIViewController {
+  public var wrappedInHostingController: UIViewController {
     UIHostingController(rootView: self)
   }
 }

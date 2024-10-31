@@ -8,7 +8,7 @@ import Combine
 
 protocol ProjectEditorViewInput: AnyObject {}
 
-protocol ProjectEditorViewOutput: AnyObject {
+protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
 }
 
@@ -20,26 +20,16 @@ enum ToolType: String {
 
 final class ProjectEditorViewController: UIViewController, ProjectEditorViewInput {
   private let viewModel: ProjectEditorViewOutput
-  private var paperView: UIView?
-  private lazy var someButton = TapIcon(
-    size: .large(),
-    icon: ShapeImageGenerator.circleImage(color: .red, size: .init(squareDimension: 32)),
-    selectionType: .icon(ShapeImageGenerator.circleImageWithBorder(color: .red, size: .init(squareDimension: 32))),
-    renderingMode: .alwaysOriginal
-  ).autoLayout()
-
-  private lazy var toolsButtons: SelectableIconsGroup = {
-    let icons: [SelectableIconsGroupModel.IconModel] = [
-      .init(id: ToolType.pencil.rawValue, icon: Asset.pencil.image),
-      .init(id: ToolType.brush.rawValue, icon: Asset.brush.image),
-      .init(id: ToolType.eraser.rawValue, icon: Asset.eraser.image)
-    ]
-    let model = SelectableIconsGroupModel(
-      icons: icons,
-      intiallySelectedId: ToolType.pencil.rawValue
-    )
-    let view = SelectableIconsGroup(model: model)
-    view.delegate = self
+  private lazy var topToolsView = {
+    let view = TopToolsGroup()
+    view.output = viewModel
+    return view
+  }()
+  private let paperView = PaperUIView()
+  private lazy var bottomToolsView = {
+    let model = BottomToolsGroupModel(selectedTool: .pencil, selectedColor: .red)
+    let view = BottomToolsGroup(model: model)
+    view.output = viewModel
     return view
   }()
 
@@ -59,32 +49,29 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   }
 
   private func setupUI() {
-    view.addSubviews(someButton, toolsButtons)
+    view.addSubviews(
+      topToolsView,
+      paperView,
+      bottomToolsView
+    )
 
-    someButton.snp.makeConstraints { make in
+    topToolsView.snp.makeConstraints { make in
       make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-      make.centerX.equalToSuperview()
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
     }
 
-    let paperView = addSwiftUiView(view: PaperView(), layout: { view in
-      view.snp.makeConstraints { make in
-        make.leading.equalToSuperview().offset(16)
-        make.trailing.equalToSuperview().offset(-16)
-        make.top.equalTo(someButton.snp.bottom).offset(24)
-        make.bottom.equalTo(toolsButtons.snp.top).offset(-24)
-      }
-    })
-    self.paperView = paperView
+    paperView.snp.makeConstraints { make in
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
+      make.top.equalTo(topToolsView.snp.bottom).offset(24)
+      make.bottom.equalTo(bottomToolsView.snp.top).offset(-24)
+    }
 
-    toolsButtons.snp.makeConstraints { make in
+    bottomToolsView.snp.makeConstraints { make in
       make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-      make.centerX.equalToSuperview()
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
     }
-  }
-}
-
-extension ProjectEditorViewController: SelectableIconsGroupDelegate {
-  func didSelect(icon: SelectableIconsGroupModel.IconModel) {
-    print(ToolType(rawValue: icon.id))
   }
 }

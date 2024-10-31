@@ -47,3 +47,9 @@ extension CGSize {
     CGSize(width: height, height: width)
   }
 }
+
+extension CGSize {
+  public static var size32: CGSize {
+    CGSize(squareDimension: 32)
+  }
+}

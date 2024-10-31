@@ -23,3 +23,45 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
     self.coordinator = coordinator
   }
 }
+
+extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
+  func undo() {
+
+  }
+  
+  func redo() {
+
+  }
+
+  func removeLayer() {
+
+  }
+  
+  func addNewLayer() {
+
+  }
+  
+  func openLayersView() {
+
+  }
+  
+  func pause() {
+
+  }
+  
+  func play() {
+
+  }
+
+  func didSelect(tool: ToolType) {
+
+  }
+  
+  func didTapShapeSelector() {
+
+  }
+  
+  func didTapColorSelector() {
+    
+  }
+}

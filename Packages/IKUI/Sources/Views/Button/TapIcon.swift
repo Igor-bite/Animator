@@ -14,7 +14,7 @@ public final class TapIcon: UIView {
   private let size: Size
   private let icon: UIImage
   private let tint: UIColor
-  private let selectionType: SelectionType
+  private let selectionType: SelectionType?
   private let renderingMode: UIImage.RenderingMode
   private var action: Action?
 
@@ -55,7 +55,7 @@ public final class TapIcon: UIView {
     size: SizeType,
     icon: UIImage,
     tint: UIColor = Colors.foreground,
-    selectionType: SelectionType = .tint(Colors.accent),
+    selectionType: SelectionType? = nil,
     renderingMode: UIImage.RenderingMode = .alwaysTemplate
   ) {
     self.size = Size(type: size)
@@ -104,6 +104,14 @@ public final class TapIcon: UIView {
   }
 
   private func updateSelection() {
+    guard let selectionType else {
+      let iconSize = CGSize(squareDimension: size.iconSize)
+      let scaledIcon = icon.scaledImage(toSize: iconSize).withRenderingMode(renderingMode)
+
+      iconButton.setImage(scaledIcon, for: .normal)
+      iconButton.tintColor = tint
+      return
+    }
     switch selectionType {
     case .tint(let selectedTint):
       let iconSize = CGSize(squareDimension: size.iconSize)

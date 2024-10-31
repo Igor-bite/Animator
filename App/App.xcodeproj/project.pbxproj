@@ -22,6 +22,9 @@
 		0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */; };
 		0A3C66B62CCE67AC008198BC /* IKUtils in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C66B52CCE67AC008198BC /* IKUtils */; };
 		0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3C66B82CCE67C2008198BC /* IKUtils */; };
+		0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F342CD3964A009790AC /* PaperUIView.swift */; };
+		0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */; };
+		0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,9 @@
 		0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		0A3C667A2CCE5765008198BC /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		0A3C66B52CCE67AC008198BC /* IKUtils */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = IKUtils; path = ../../Packages/IKUtils; sourceTree = "<group>"; };
+		0AD20F342CD3964A009790AC /* PaperUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperUIView.swift; sourceTree = "<group>"; };
+		0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopToolsGroup.swift; sourceTree = "<group>"; };
+		0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomToolsGroup.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +68,7 @@
 			children = (
 				0A1A25E62CD02CA600EABC95 /* Paper.metal */,
 				0A1A25E82CD02CA600EABC95 /* PaperView.swift */,
+				0AD20F342CD3964A009790AC /* PaperUIView.swift */,
 			);
 			path = PaperView;
 			sourceTree = "<group>";
@@ -102,6 +109,8 @@
 				0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */,
 				0A1A25E22CD01C3600EABC95 /* ProjectEditorCoordinator.swift */,
 				0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */,
+				0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */,
+				0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */,
 			);
 			path = ProjectEditor;
 			sourceTree = "<group>";
@@ -280,11 +289,14 @@
 				0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */,
 				0A1A25E92CD02CA600EABC95 /* PaperView.swift in Sources */,
 				0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */,
+				0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */,
 				0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */,
 				0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */,
 				0A3C66962CCE5765008198BC /* Assets.swift in Sources */,
+				0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */,
 				0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */,
 				0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */,
+				0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */,
 				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
