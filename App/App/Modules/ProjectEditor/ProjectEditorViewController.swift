@@ -23,8 +23,9 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   private var paperView: UIView?
   private lazy var someButton = TapIcon(
     size: .large(),
-    icon: Asset.eraser.image,
-    selectionType: .icon(Asset.bin.image)
+    icon: ShapeImageGenerator.circleImage(color: .red, size: .init(squareDimension: 32)),
+    selectionType: .icon(ShapeImageGenerator.circleImageWithBorder(color: .red, size: .init(squareDimension: 32))),
+    renderingMode: .alwaysOriginal
   ).autoLayout()
 
   private lazy var toolsButtons: SelectableIconsGroup = {
