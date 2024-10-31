@@ -1,7 +1,7 @@
 // Created by Igor Klyuzhev in 2024
 
-import UIKit
 import IKUtils
+import UIKit
 
 public final class TapIcon: UIView {
   public enum SelectionType {
@@ -45,7 +45,7 @@ public final class TapIcon: UIView {
 
   // MARK: UI
 
-  private let iconButton: ScalableButton = ScalableButton(
+  private let iconButton: ScalableButton = .init(
     type: .custom
   ).autoLayout()
 
@@ -64,7 +64,7 @@ public final class TapIcon: UIView {
     self.selectionType = selectionType
     self.renderingMode = renderingMode
     super.init(frame: .zero)
-    
+
     setupLayout()
     iconButton.addTarget(self, action: #selector(didTap), for: .touchUpInside)
   }
@@ -113,13 +113,13 @@ public final class TapIcon: UIView {
       return
     }
     switch selectionType {
-    case .tint(let selectedTint):
+    case let .tint(selectedTint):
       let iconSize = CGSize(squareDimension: size.iconSize)
       let scaledIcon = icon.scaledImage(toSize: iconSize).withRenderingMode(renderingMode)
 
       iconButton.setImage(scaledIcon, for: .normal)
       iconButton.tintColor = isSelected ? selectedTint : tint
-    case .icon(let selectedIcon):
+    case let .icon(selectedIcon):
       let resolvedIcon = isSelected ? selectedIcon : icon
       let iconSize = CGSize(squareDimension: size.iconSize)
       let scaledIcon = resolvedIcon.scaledImage(toSize: iconSize).withRenderingMode(renderingMode)

@@ -1,9 +1,9 @@
 // Created by Igor Klyuzhev in 2024
 
-import UIKit
-import IKUtils
 import IKUI
+import IKUtils
 import SnapKit
+import UIKit
 
 protocol BottomToolsGroupInput {}
 
@@ -25,7 +25,7 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
     let icons: [SelectableIconsGroupModel.IconModel] = [
       .init(id: ToolType.pencil.rawValue, icon: Asset.pencil.image),
       .init(id: ToolType.brush.rawValue, icon: Asset.brush.image),
-      .init(id: ToolType.eraser.rawValue, icon: Asset.eraser.image)
+      .init(id: ToolType.eraser.rawValue, icon: Asset.eraser.image),
     ]
     let model = SelectableIconsGroupModel(
       icons: icons,
@@ -67,6 +67,7 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
     setupActions()
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

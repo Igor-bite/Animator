@@ -13,6 +13,7 @@ final class ApplicationCoordinator: ApplicationCoordinating {
     navigationController.isNavigationBarHidden = true
     return navigationController
   }()
+
   private let serviceLocator = ServiceLocator()
 
   func start() {

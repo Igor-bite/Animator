@@ -15,13 +15,13 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(path: "./IKUtils")
+    .package(path: "./IKUtils"),
   ],
   targets: [
     .target(
       name: "IKDrawing",
       dependencies: [
-        "IKUtils"
+        "IKUtils",
       ]
     ),
   ],

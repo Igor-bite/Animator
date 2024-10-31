@@ -4,12 +4,12 @@ import UIKit
 
 extension UIImage {
   public var roundedCorners: UIImage {
-    let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: self.size)
-    UIGraphicsBeginImageContextWithOptions(self.size, false, 1)
+    let rect = CGRect(origin: CGPoint(x: 0, y: 0), size: size)
+    UIGraphicsBeginImageContextWithOptions(size, false, 1)
 
     UIBezierPath(
       roundedRect: rect,
-      cornerRadius: self.size.height
+      cornerRadius: size.height
     ).addClip()
     draw(in: rect)
 
@@ -21,15 +21,15 @@ extension UIImage {
 
   public func scaledImage(toSize size: CGSize, scale: CGFloat = 0.0) -> UIImage {
     UIGraphicsBeginImageContextWithOptions(size, false, scale)
-    self.draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size.width, height: size.height)))
+    draw(in: CGRect(origin: CGPoint.zero, size: CGSize(width: size.width, height: size.height)))
     let newImage: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
     UIGraphicsEndImageContext()
     return newImage
   }
 
   public func resized(newWidth: CGFloat) -> UIImage {
-    let scale = newWidth / self.size.width
-    let newHeight = self.size.height * scale
+    let scale = newWidth / size.width
+    let newHeight = size.height * scale
 
     UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
 

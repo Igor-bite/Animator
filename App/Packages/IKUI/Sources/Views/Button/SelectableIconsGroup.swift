@@ -1,8 +1,8 @@
 // Created by Igor Klyuzhev in 2024
 
-import UIKit
 import IKUtils
 import SnapKit
+import UIKit
 
 public struct SelectableIconsGroupModel {
   public struct IconModel {
@@ -50,7 +50,7 @@ public final class SelectableIconsGroup: UIView {
 
   public weak var delegate: SelectableIconsGroupDelegate?
 
-  public override var intrinsicContentSize: CGSize {
+  override public var intrinsicContentSize: CGSize {
     let iconsSize = TapIcon.Size(type: model.size)
     let width = iconsSize.iconSize * CGFloat(model.icons.count) + model.spacing * CGFloat(model.icons.count - 1)
     let height = iconsSize.iconSize
@@ -62,7 +62,8 @@ public final class SelectableIconsGroup: UIView {
     super.init(frame: .zero)
     setupUI()
   }
-  
+
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

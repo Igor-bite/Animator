@@ -6,7 +6,7 @@ public struct PaperView: View {
   @Environment(\.colorScheme) var colorScheme
 
   public init() {}
-  
+
   public var body: some View {
     RoundedRectangle(cornerRadius: 20)
       .fill(

@@ -1,9 +1,9 @@
 // Created by Igor Klyuzhev in 2024
 
-import UIKit
-import IKUtils
 import IKUI
+import IKUtils
 import SnapKit
+import UIKit
 
 protocol TopToolsGroupInput {}
 
@@ -63,6 +63,7 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     setupActions()
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -72,7 +73,7 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     redoUndoStack.spacing = 16
     redoUndoStack.addArrangedSubviews([
       undoButton,
-      redoButton
+      redoButton,
     ])
 
     let layerToolsStack = UIStackView()
@@ -80,14 +81,14 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     layerToolsStack.addArrangedSubviews([
       removeLayerButton,
       addLayerButton,
-      layersViewButton
+      layersViewButton,
     ])
 
     let playPauseStack = UIStackView()
     playPauseStack.spacing = 16
     playPauseStack.addArrangedSubviews([
       pauseButton,
-      playButton
+      playButton,
     ])
 
     let containerStack = UIStackView()
@@ -95,7 +96,7 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     containerStack.addArrangedSubviews([
       redoUndoStack,
       layerToolsStack,
-      playPauseStack
+      playPauseStack,
     ])
 
     addSubview(containerStack)

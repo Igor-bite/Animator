@@ -5,8 +5,8 @@ import UIKit
 
 extension Publishers {
   public static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-    let willShow = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-      .map { $0._keyboardHeight }
+    let willShow: Publishers.Map<NotificationCenter.Publisher, CGFloat> = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
+      .map(\._keyboardHeight)
 
     let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
       .map { _ in CGFloat(0) }

@@ -1,7 +1,7 @@
 // Created by Igor Klyuzhev in 2024
 
-import UIKit
 import SwiftUI
+import UIKit
 
 extension UIViewController {
   public func addSwiftUiView(

@@ -16,14 +16,14 @@ let package = Package(
   ],
   dependencies: [
     .package(path: "./IKUtils"),
-    .package(url: "https://github.com/SnapKit/SnapKit", .exactItem("5.7.1"))
+    .package(url: "https://github.com/SnapKit/SnapKit", .exactItem("5.7.1")),
   ],
   targets: [
     .target(
       name: "IKUI",
       dependencies: [
         "IKUtils",
-        "SnapKit"
+        "SnapKit",
       ]
     ),
   ],

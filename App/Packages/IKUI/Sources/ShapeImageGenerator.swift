@@ -28,8 +28,8 @@ public enum ShapeImageGenerator {
       ctx.cgContext.setLineWidth(lineWidth)
 
       let rectangle = CGRect(
-        x: lineWidth/2,
-        y: lineWidth/2,
+        x: lineWidth / 2,
+        y: lineWidth / 2,
         width: size.width - lineWidth,
         height: size.height - lineWidth
       )

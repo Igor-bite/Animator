@@ -85,7 +85,7 @@ extension Array where Element == Int {
   }
 }
 
-fileprivate func gcd(_ a: Int, _ b: Int) -> Int {
+private func gcd(_ a: Int, _ b: Int) -> Int {
   var a = abs(a)
   var b = abs(b)
   var remainder = a % b

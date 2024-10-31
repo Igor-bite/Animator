@@ -14,7 +14,7 @@ extension UIEdgeInsets {
   public var vertical: CGFloat {
     top + bottom
   }
-  
+
   public init(top: CGFloat) {
     self.init(top: top, left: .zero, bottom: .zero, right: .zero)
   }

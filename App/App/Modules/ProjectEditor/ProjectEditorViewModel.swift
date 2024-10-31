@@ -1,7 +1,7 @@
 // Created by Igor Klyuzhev in 2024
 
-import Foundation
 import Combine
+import Foundation
 
 enum ProjectEditorState {
   /// Стейт рисования на холсте
@@ -14,7 +14,7 @@ enum ProjectEditorState {
 
 final class ProjectEditorViewModel: ProjectEditorViewOutput {
   private let coordinator: ProjectEditorCoordinating
-  
+
   weak var view: ProjectEditorViewInput?
 
   var state = CurrentValueSubject<ProjectEditorState, Never>(.drawing)
@@ -25,43 +25,23 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
 }
 
 extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
-  func undo() {
+  func undo() {}
 
-  }
-  
-  func redo() {
+  func redo() {}
 
-  }
+  func removeLayer() {}
 
-  func removeLayer() {
+  func addNewLayer() {}
 
-  }
-  
-  func addNewLayer() {
+  func openLayersView() {}
 
-  }
-  
-  func openLayersView() {
+  func pause() {}
 
-  }
-  
-  func pause() {
+  func play() {}
 
-  }
-  
-  func play() {
+  func didSelect(tool: ToolType) {}
 
-  }
+  func didTapShapeSelector() {}
 
-  func didSelect(tool: ToolType) {
-
-  }
-  
-  func didTapShapeSelector() {
-
-  }
-  
-  func didTapColorSelector() {
-    
-  }
+  func didTapColorSelector() {}
 }

@@ -25,4 +25,3 @@ class ScalableButton: UIButton {
     setDefaultState()
   }
 }
-

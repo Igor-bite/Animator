@@ -57,7 +57,6 @@ extension UIView {
   }
 }
 
-
 extension UIView {
   @discardableResult
   public func autoLayout() -> Self {
