@@ -1,13 +1,19 @@
 // Created by Igor Klyuzhev in 2024
 
+import Combine
 import IKUI
 import IKUtils
 import SnapKit
 import UIKit
 
-protocol TopToolsGroupInput {}
+protocol TopToolsGroupInput {
+  func updateUI()
+}
 
 protocol TopToolsGroupOutput: AnyObject {
+  var canUndo: Bool { get }
+  var canRedo: Bool { get }
+
   func undo()
   func redo()
 
@@ -19,8 +25,12 @@ protocol TopToolsGroupOutput: AnyObject {
   func play()
 }
 
-final class TopToolsGroup: UIView, TopToolsGroupInput {
-  weak var output: TopToolsGroupOutput?
+final class TopToolsGroup: UIView {
+  weak var output: TopToolsGroupOutput? {
+    didSet {
+      updateButtons()
+    }
+  }
 
   private let undoButton = TapIcon(
     size: .medium(),
@@ -61,6 +71,7 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     super.init(frame: .zero)
     setupUI()
     setupActions()
+    updateButtons()
   }
 
   @available(*, unavailable)
@@ -127,5 +138,29 @@ final class TopToolsGroup: UIView, TopToolsGroupInput {
     playButton.addAction { [weak self] in
       self?.output?.play()
     }
+  }
+
+  private func updateButtons() {
+    guard let output else { return }
+
+    let undoTint = output.canUndo ? Colors.foreground : Colors.disabled
+    undoButton.configure(
+      tint: undoTint,
+      selectionType: .tint(undoTint)
+    )
+    undoButton.isUserInteractionEnabled = output.canUndo
+
+    let redoTint = output.canRedo ? Colors.foreground : Colors.disabled
+    redoButton.configure(
+      tint: redoTint,
+      selectionType: .tint(redoTint)
+    )
+    redoButton.isUserInteractionEnabled = output.canRedo
+  }
+}
+
+extension TopToolsGroup: TopToolsGroupInput {
+  func updateUI() {
+    updateButtons()
   }
 }

@@ -7,7 +7,9 @@ import IKUtils
 import SnapKit
 import UIKit
 
-protocol ProjectEditorViewInput: AnyObject {}
+protocol ProjectEditorViewInput: AnyObject {
+  func updateTopControls()
+}
 
 protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
@@ -56,6 +58,10 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     super.viewDidLoad()
     view.backgroundColor = Colors.background
     setupUI()
+  }
+
+  func updateTopControls() {
+    topToolsView.updateUI()
   }
 
   private func setupUI() {

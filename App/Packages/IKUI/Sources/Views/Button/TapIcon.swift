@@ -12,9 +12,9 @@ public final class TapIcon: UIView {
   // MARK: Properties
 
   private let size: Size
-  private let icon: UIImage
-  private let tint: UIColor
-  private let selectionType: SelectionType?
+  private var icon: UIImage
+  private var tint: UIColor
+  private var selectionType: SelectionType?
   private let renderingMode: UIImage.RenderingMode
   private var action: Action?
 
@@ -75,6 +75,40 @@ public final class TapIcon: UIView {
   }
 
   // MARK: Setup
+
+  public func configure(
+    icon: UIImage? = nil,
+    tint: UIColor? = nil,
+    selectionType: SelectionType?
+  ) {
+    guard icon != nil || tint != nil else { return }
+
+    if let icon {
+      self.icon = icon
+    }
+    if let tint {
+      self.tint = tint
+    }
+    self.selectionType = selectionType
+
+    updateButton()
+  }
+
+  public func configure(
+    icon: UIImage? = nil,
+    tint: UIColor? = nil
+  ) {
+    guard icon != nil || tint != nil else { return }
+
+    if let icon {
+      self.icon = icon
+    }
+    if let tint {
+      self.tint = tint
+    }
+
+    updateButton()
+  }
 
   private func setupLayout() {
     addSubview(iconButton)

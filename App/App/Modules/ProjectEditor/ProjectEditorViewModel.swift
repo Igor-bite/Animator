@@ -25,7 +25,14 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
     }
   }
 
-  var drawingInteractor: DrawingViewInteractor?
+  var drawingInteractor: DrawingViewInteractor? {
+    willSet {
+      drawingInteractor?.delegate = nil
+    }
+    didSet {
+      drawingInteractor?.delegate = self
+    }
+  }
 
   init(coordinator: ProjectEditorCoordinating) {
     self.coordinator = coordinator
@@ -44,6 +51,14 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
 }
 
 extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
+  var canUndo: Bool {
+    drawingInteractor?.canUndo ?? false
+  }
+
+  var canRedo: Bool {
+    drawingInteractor?.canRedo ?? false
+  }
+
   func undo() {
     drawingInteractor?.undo()
   }
@@ -69,4 +84,10 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   func didTapShapeSelector() {}
 
   func didTapColorSelector() {}
+}
+
+extension ProjectEditorViewModel: DrawingViewDelegate {
+  func didUpdateCommandHistory() {
+    view?.updateTopControls()
+  }
 }

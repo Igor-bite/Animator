@@ -3,6 +3,7 @@
 import Foundation
 
 public protocol DrawingViewInteractor {
+  var delegate: DrawingViewDelegate? { get set }
   var canUndo: Bool { get }
   var canRedo: Bool { get }
 
@@ -13,6 +14,7 @@ public protocol DrawingViewInteractor {
 
 final class DrawingViewController: DrawingViewOutput {
   weak var view: DrawingViewInput?
+  weak var delegate: DrawingViewDelegate?
 
   var config: DrawingViewConfiguration
 
@@ -25,10 +27,12 @@ final class DrawingViewController: DrawingViewOutput {
 
   func commit(command: DrawingCommand) {
     history.append(command)
+    delegate?.didUpdateCommandHistory()
   }
 
   func clearRedoHistory() {
     redoHistory.removeAll()
+    delegate?.didUpdateCommandHistory()
   }
 }
 
@@ -46,6 +50,7 @@ extension DrawingViewController: DrawingViewInteractor {
     let lastCommand = history.removeLast()
     redoHistory.append(lastCommand)
     view?.execute(command: lastCommand.inverted)
+    delegate?.didUpdateCommandHistory()
   }
 
   func redo() {
@@ -53,6 +58,7 @@ extension DrawingViewController: DrawingViewInteractor {
     let lastCommand = redoHistory.removeLast()
     history.append(lastCommand)
     view?.execute(command: lastCommand)
+    delegate?.didUpdateCommandHistory()
   }
 
   func didUpdateConfig(config: DrawingViewConfiguration) {

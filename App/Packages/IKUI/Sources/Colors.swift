@@ -6,6 +6,7 @@ public enum Colors {
   public static let accent = UIColor(hex: "#A8DB10FF")
   public static let background = UIColor(light: Palette.white, dark: Palette.black)
   public static let foreground = UIColor(light: Palette.black, dark: Palette.white)
+  public static let disabled = Palette.gray
 
   enum Palette {
     public static let white = UIColor(hex: "#FFFFFFFF")
