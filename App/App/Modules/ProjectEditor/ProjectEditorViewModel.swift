@@ -38,7 +38,7 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
     self.coordinator = coordinator
     drawingConfig = DrawingViewConfiguration(
       tool: .pen,
-      lineWidth: 2,
+      lineWidth: 20,
       color: .red
     )
   }

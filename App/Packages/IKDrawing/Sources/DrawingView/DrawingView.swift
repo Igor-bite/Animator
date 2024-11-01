@@ -1,5 +1,6 @@
 // Created by Igor Klyuzhev in 2024
 
+import SnapKit
 import UIKit
 
 protocol DrawingViewInput: AnyObject {
@@ -22,12 +23,30 @@ final class DrawingView: UIView {
 
   private var touchDownPoint: CGPoint?
   private var pointsBuffer = [CGPoint]()
-  private var topLayer = CAShapeLayer()
+  private lazy var topLayer = DrawingTopLayer(
+    lineWidth: config.lineWidth,
+    strokeColor: config.color,
+    isEraser: false
+  )
+  private lazy var eraserTopLayer = DrawingTopLayer(
+    lineWidth: config.lineWidth,
+    strokeColor: .white,
+    isEraser: true
+  )
+  private let layersContainer = UIView()
 
   init(controller: DrawingViewOutput) {
     self.controller = controller
     super.init(frame: .zero)
     setup()
+  }
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    topLayer.frame = bounds
+    topLayer.setNeedsDisplay()
+    eraserTopLayer.frame = bounds
+    eraserTopLayer.setNeedsDisplay()
   }
 
   @available(*, unavailable)
@@ -36,9 +55,14 @@ final class DrawingView: UIView {
   }
 
   private func setup() {
-    topLayer.fillColor = nil
-    layer.masksToBounds = true
+    addSubview(layersContainer)
+    layersContainer.snp.makeConstraints { make in
+      make.edges.equalToSuperview()
+    }
+    isOpaque = false
+    clipsToBounds = true
     layer.addSublayer(topLayer)
+    eraserTopLayer.isEraser = true
   }
 }
 
@@ -46,13 +70,16 @@ final class DrawingView: UIView {
 
 extension DrawingView: DrawingViewInput {
   func execute(command: DrawingCommand) {
-    switch command {
-    case let .addLayer(layer):
-      self.layer.insertSublayer(layer, below: topLayer)
-      setNeedsDisplay()
-    case let .removeLayer(layer):
-      layer.removeFromSuperlayer()
-      setNeedsDisplay()
+    UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) { [weak self] in
+      guard let self else { return }
+      switch command {
+      case let .addLayer(layer):
+        layersContainer.layer.insertSublayer(layer, below: topLayer)
+        setNeedsDisplay()
+      case let .removeLayer(layer):
+        layer.removeFromSuperlayer()
+        setNeedsDisplay()
+      }
     }
   }
 }
@@ -62,21 +89,16 @@ extension DrawingView: DrawingViewInput {
 extension DrawingView {
   private func updateTopLayer() {
     let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
+    let topLayer = config.isEraser ? eraserTopLayer : topLayer
     topLayer.lineWidth = config.lineWidth
-
-    let strokeColor = config.color
-    topLayer.strokeColor = strokeColor.cgColor
-    topLayer.fillColor = nil
-    topLayer.contentsScale = UIScreen.main.scale
-
+    topLayer.strokeColor = config.color
     topLayer.path = pathLayer.cgPath
+    topLayer.setNeedsDisplay()
   }
 
   private func flushTopLayer() {
     pointsBuffer.removeAll()
     clearTopLayer()
-    setNeedsDisplay()
-    layer.setNeedsDisplay()
   }
 
   private func addCircleLayer(in rect: CGRect) {
@@ -88,16 +110,21 @@ extension DrawingView {
     let newShapeLayer = DrawingShapeLayer()
     newShapeLayer.path = shape.cgPath
     newShapeLayer.lineWidth = lineWidth
+    newShapeLayer.lineCap = .round
+    newShapeLayer.lineJoin = .round
     newShapeLayer.strokeColor = color.cgColor
     newShapeLayer.fillColor = nil
     newShapeLayer.contentsScale = UIScreen.main.scale
-    layer.insertSublayer(newShapeLayer, below: topLayer)
+    layersContainer.layer.insertSublayer(newShapeLayer, below: topLayer)
     newShapeLayer.setNeedsDisplay()
     controller.commit(command: .addLayer(newShapeLayer))
   }
 
   private func clearTopLayer() {
     topLayer.path = nil
+    topLayer.setNeedsDisplay()
+    eraserTopLayer.path = nil
+    eraserTopLayer.setNeedsDisplay()
   }
 }
 
@@ -107,6 +134,9 @@ extension DrawingView {
   private func handleTouchStart(at location: CGPoint) {
     touchDownPoint = location
     pointsBuffer.append(location)
+    if config.isEraser, layersContainer.layer.mask == nil {
+      layersContainer.layer.mask = eraserTopLayer
+    }
     updateTopLayer()
     controller.clearRedoHistory()
   }
@@ -133,8 +163,10 @@ extension DrawingView {
     } else {
       // MARK: Add bezier path shape layer
 
-      let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
-      addShapeLayer(pathLayer, lineWidth: config.lineWidth, color: config.color)
+      if !config.isEraser {
+        let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
+        addShapeLayer(pathLayer, lineWidth: config.lineWidth, color: config.color)
+      }
     }
 
     flushTopLayer()
