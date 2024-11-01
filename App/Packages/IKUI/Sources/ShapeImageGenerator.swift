@@ -12,7 +12,7 @@ public enum ShapeImageGenerator {
 
       let rectangle = CGRect(x: 0, y: 0, width: size.width, height: size.height)
       ctx.cgContext.addEllipse(in: rectangle)
-      ctx.cgContext.drawPath(using: .fillStroke)
+      ctx.cgContext.drawPath(using: .fill)
     }
   }
 
