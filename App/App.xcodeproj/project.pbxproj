@@ -24,6 +24,7 @@
 		0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F342CD3964A009790AC /* PaperUIView.swift */; };
 		0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */; };
 		0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */; };
+		0AD20F3E2CD42A5D009790AC /* IKDrawing in Frameworks */ = {isa = PBXBuildFile; productRef = 0AD20F3D2CD42A5D009790AC /* IKDrawing */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,6 +56,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A1A25EE2CD1879B00EABC95 /* SnapKit in Frameworks */,
+				0AD20F3E2CD42A5D009790AC /* IKDrawing in Frameworks */,
 				0A1A25E12CD006F800EABC95 /* IKUI in Frameworks */,
 				0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */,
 			);
@@ -205,6 +207,7 @@
 				0A3C66B82CCE67C2008198BC /* IKUtils */,
 				0A1A25E02CD006F800EABC95 /* IKUI */,
 				0A1A25ED2CD1879B00EABC95 /* SnapKit */,
+				0AD20F3D2CD42A5D009790AC /* IKDrawing */,
 			);
 			productName = App;
 			productReference = 0A3C66132CCE54F6008198BC /* App.app */;
@@ -556,6 +559,10 @@
 		0A3C66B82CCE67C2008198BC /* IKUtils */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IKUtils;
+		};
+		0AD20F3D2CD42A5D009790AC /* IKDrawing */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IKDrawing;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

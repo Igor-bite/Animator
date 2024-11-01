@@ -1,5 +1,6 @@
 // Created by Igor Klyuzhev in 2024
 
+import IKDrawing
 import IKUI
 import IKUtils
 import SnapKit
@@ -8,13 +9,13 @@ import UIKit
 protocol BottomToolsGroupInput {}
 
 protocol BottomToolsGroupOutput: AnyObject {
-  func didSelect(tool: ToolType)
+  func didSelect(tool: DrawingTool)
   func didTapShapeSelector()
   func didTapColorSelector()
 }
 
 struct BottomToolsGroupModel {
-  let selectedTool: ToolType
+  let selectedTool: DrawingTool
   let selectedColor: UIColor
 }
 
@@ -23,13 +24,13 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
 
   private lazy var drawingToolsButtons: SelectableIconsGroup = {
     let icons: [SelectableIconsGroupModel.IconModel] = [
-      .init(id: ToolType.pencil.rawValue, icon: Asset.pencil.image),
-      .init(id: ToolType.brush.rawValue, icon: Asset.brush.image),
-      .init(id: ToolType.eraser.rawValue, icon: Asset.eraser.image),
+      .init(id: DrawingTool.pen.rawValue, icon: Asset.pencil.image),
+      .init(id: "brush", icon: Asset.brush.image),
+      .init(id: DrawingTool.eraser.rawValue, icon: Asset.eraser.image),
     ]
     let model = SelectableIconsGroupModel(
       icons: icons,
-      intiallySelectedId: ToolType.pencil.rawValue
+      intiallySelectedId: model.selectedTool.rawValue
     )
     let view = SelectableIconsGroup(model: model)
     view.delegate = self
@@ -115,7 +116,7 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
 
 extension BottomToolsGroup: SelectableIconsGroupDelegate {
   func didSelect(icon: SelectableIconsGroupModel.IconModel) {
-    guard let tool = ToolType(rawValue: icon.id) else { return }
+    guard let tool = DrawingTool(rawValue: icon.id) else { return }
     output?.didSelect(tool: tool)
   }
 }

@@ -2,6 +2,7 @@
 
 import Combine
 import Foundation
+import IKDrawing
 
 enum ProjectEditorState {
   /// Стейт рисования на холсте
@@ -18,16 +19,38 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
   weak var view: ProjectEditorViewInput?
 
   var state = CurrentValueSubject<ProjectEditorState, Never>(.drawing)
+  var drawingConfig: DrawingViewConfiguration {
+    didSet {
+      updateDrawingViewConfig()
+    }
+  }
+
+  var drawingInteractor: DrawingViewInteractor?
 
   init(coordinator: ProjectEditorCoordinating) {
     self.coordinator = coordinator
+    drawingConfig = DrawingViewConfiguration(
+      tool: .pen,
+      lineWidth: 2,
+      color: .red
+    )
+  }
+
+  private func updateDrawingViewConfig() {
+    drawingInteractor?.didUpdateConfig(
+      config: drawingConfig
+    )
   }
 }
 
 extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
-  func undo() {}
+  func undo() {
+    drawingInteractor?.undo()
+  }
 
-  func redo() {}
+  func redo() {
+    drawingInteractor?.redo()
+  }
 
   func removeLayer() {}
 
@@ -39,7 +62,9 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 
   func play() {}
 
-  func didSelect(tool: ToolType) {}
+  func didSelect(tool: DrawingTool) {
+    drawingConfig.tool = tool
+  }
 
   func didTapShapeSelector() {}
 
