@@ -1,8 +1,8 @@
 // Created by Igor Klyuzhev in 2024
 
 import Combine
-import Foundation
 import IKDrawing
+import UIKit
 
 enum ProjectEditorState {
   /// Стейт рисования на холсте

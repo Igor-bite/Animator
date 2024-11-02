@@ -1,5 +1,6 @@
 // Created by Igor Klyuzhev in 2024
 
+import IKUtils
 import SnapKit
 import UIKit
 
@@ -33,7 +34,15 @@ final class DrawingView: UIView {
     strokeColor: .white,
     isEraser: true
   )
-  private let layersContainer = UIView()
+  private var drawingImage: UIImage?
+  private var drawingImageView = UIImageView()
+  private lazy var renderer: UIGraphicsImageRenderer = {
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = 1.0
+    format.preferredRange = .standard
+    format.opaque = false
+    return UIGraphicsImageRenderer(size: bounds.size, format: format)
+  }()
 
   init(controller: DrawingViewOutput) {
     self.controller = controller
@@ -55,8 +64,8 @@ final class DrawingView: UIView {
   }
 
   private func setup() {
-    addSubview(layersContainer)
-    layersContainer.snp.makeConstraints { make in
+    addSubviews(drawingImageView)
+    drawingImageView.snp.makeConstraints { make in
       make.edges.equalToSuperview()
     }
     isOpaque = false
@@ -74,10 +83,10 @@ extension DrawingView: DrawingViewInput {
       guard let self else { return }
       switch command {
       case let .addLayer(layer):
-        layersContainer.layer.insertSublayer(layer, below: topLayer)
+//        layersContainer.layer.insertSublayer(layer, below: topLayer)
         setNeedsDisplay()
       case let .removeLayer(layer):
-        layer.removeFromSuperlayer()
+//        layer.removeFromSuperlayer()
         setNeedsDisplay()
       }
     }
@@ -107,17 +116,38 @@ extension DrawingView {
   }
 
   private func addShapeLayer(_ shape: UIBezierPath, lineWidth: CGFloat, color: UIColor) {
-    let newShapeLayer = DrawingShapeLayer()
-    newShapeLayer.path = shape.cgPath
-    newShapeLayer.lineWidth = lineWidth
-    newShapeLayer.lineCap = .round
-    newShapeLayer.lineJoin = .round
-    newShapeLayer.strokeColor = color.cgColor
-    newShapeLayer.fillColor = nil
-    newShapeLayer.contentsScale = UIScreen.main.scale
-    layersContainer.layer.insertSublayer(newShapeLayer, below: topLayer)
-    newShapeLayer.setNeedsDisplay()
-    controller.commit(command: .addLayer(newShapeLayer))
+    let imageSize = bounds.size
+
+    drawingImage = renderer.image { ctx in
+      ctx.cgContext.setBlendMode(.copy)
+      ctx.cgContext.clear(CGRect(origin: .zero, size: imageSize))
+      if let image = drawingImage {
+        image.draw(at: .zero)
+      }
+
+      if config.isEraser {
+        ctx.cgContext.setBlendMode(.clear)
+        ctx.cgContext.setLineCap(.round)
+        ctx.cgContext.setLineJoin(.round)
+        ctx.cgContext.setLineWidth(lineWidth)
+        ctx.cgContext.setStrokeColor(UIColor.white.cgColor)
+        ctx.cgContext.addPath(shape.cgPath)
+        ctx.cgContext.drawPath(using: .stroke)
+      } else {
+        ctx.cgContext.setBlendMode(.normal)
+        ctx.cgContext.setLineCap(.round)
+        ctx.cgContext.setLineJoin(.round)
+        ctx.cgContext.setLineWidth(lineWidth)
+        ctx.cgContext.setStrokeColor(color.cgColor)
+        ctx.cgContext.addPath(shape.cgPath)
+        ctx.cgContext.drawPath(using: .stroke)
+      }
+      // TODO: extract drawing logic of path into separate object
+    }
+
+    drawingImageView.image = drawingImage
+    // TODO: вернуть поддержку undo / redo с помощью сохранения промежуточных изображений слоёв
+//    controller.commit(command: .addLayer(newShapeLayer))
   }
 
   private func clearTopLayer() {
@@ -134,8 +164,8 @@ extension DrawingView {
   private func handleTouchStart(at location: CGPoint) {
     touchDownPoint = location
     pointsBuffer.append(location)
-    if config.isEraser, layersContainer.layer.mask == nil {
-      layersContainer.layer.mask = eraserTopLayer
+    if config.isEraser, drawingImageView.layer.mask == nil {
+      drawingImageView.layer.mask = eraserTopLayer
     }
     updateTopLayer()
     controller.clearRedoHistory()
@@ -149,9 +179,6 @@ extension DrawingView {
   private func handleTouchEnded(at location: CGPoint, touchSize: CGFloat) {
     if pointsBuffer.count == 1 {
       let circleSize = touchSize * 2
-
-      // MARK: Add circle shape layer
-
       addCircleLayer(
         in: CGRect(
           x: location.x,
@@ -161,12 +188,12 @@ extension DrawingView {
         )
       )
     } else {
-      // MARK: Add bezier path shape layer
-
-      if !config.isEraser {
-        let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
-        addShapeLayer(pathLayer, lineWidth: config.lineWidth, color: config.color)
-      }
+      let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
+      addShapeLayer(
+        pathLayer,
+        lineWidth: config.lineWidth,
+        color: config.color
+      )
     }
 
     flushTopLayer()

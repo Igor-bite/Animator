@@ -47,7 +47,7 @@ final class DrawingTopLayer: CALayer {
       if let path {
         ctx.addPath(path)
       }
-      ctx.setBlendMode(.copy)
+      ctx.setBlendMode(.normal)
       ctx.drawPath(using: .stroke)
     }
   }
