@@ -12,9 +12,15 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateLineWidthPreview()
   func updateLineWidthPreviewVisibility(isVisible: Bool)
   func updateLineWidthAlpha()
+  func updateColorSelector()
 }
 
-protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput, LineWidthSelectorDelegate {
+protocol ProjectEditorViewOutput: AnyObject,
+  TopToolsGroupOutput,
+  BottomToolsGroupOutput,
+  LineWidthSelectorDelegate,
+  ColorSelectorViewDelegate
+{
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
   var drawingInteractor: DrawingViewInteractor? { get set }
@@ -63,6 +69,13 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
 
   private var lineWidthPreviewSize: Constraint?
   private var lineWidthSelectorLeading: Constraint?
+
+  private lazy var colorSelectorView = {
+    let view = ColorSelectorView()
+    view.alpha = 0
+    view.delegate = viewModel
+    return view
+  }()
 
   private var bag = CancellableBag()
 
@@ -126,6 +139,19 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     }
   }
 
+  func updateColorSelector() {
+    let isVisible = colorSelectorView.alpha == 1
+    bottomToolsView.updateColorSelector(isSelected: !isVisible)
+    bottomToolsView.updateColorSelector(color: viewModel.drawingConfig.color)
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      self.colorSelectorView.alpha = isVisible ? 0 : 1
+    }
+  }
+
   private func setupBinding() {
     viewModel.state.sink { [weak self] state in
       self?.handleStateUpdate(to: state)
@@ -166,7 +192,8 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
       drawingView,
       bottomToolsView,
       lineWidthSelector,
-      lineWidthPreview
+      lineWidthPreview,
+      colorSelectorView
     )
 
     topToolsView.snp.makeConstraints { make in
@@ -201,6 +228,13 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     lineWidthPreview.snp.makeConstraints { make in
       make.centerX.centerY.equalToSuperview()
       self.lineWidthPreviewSize = make.height.width.equalTo(0).offset(viewModel.drawingConfig.lineWidth).constraint
+    }
+
+    colorSelectorView.snp.makeConstraints { make in
+      make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
+      make.height.equalTo(64)
+      make.leading.equalToSuperview().offset(60)
+      make.trailing.equalToSuperview().offset(-60)
     }
   }
 }

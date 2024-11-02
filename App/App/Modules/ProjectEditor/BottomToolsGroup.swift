@@ -6,7 +6,12 @@ import IKUtils
 import SnapKit
 import UIKit
 
-protocol BottomToolsGroupInput {}
+protocol BottomToolsGroupInput {
+  func updateColorSelector(isSelected: Bool)
+  func updateColorSelector(color: UIColor)
+
+  func updateShapeSelector(isSelected: Bool)
+}
 
 protocol BottomToolsGroupOutput: AnyObject {
   func didSelect(tool: DrawingTool)
@@ -71,6 +76,29 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
   @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  func updateColorSelector(isSelected: Bool) {
+    colorSelectorButton.isSelected = isSelected
+  }
+
+  func updateColorSelector(color: UIColor) {
+    let image = ShapeImageGenerator.circleImage(
+      color: color,
+      size: .size32
+    )
+    let selectedImage = ShapeImageGenerator.circleImageWithBorder(
+      color: color,
+      size: .size32
+    )
+    colorSelectorButton.configure(
+      icon: image,
+      selectionType: .icon(selectedImage)
+    )
+  }
+
+  func updateShapeSelector(isSelected: Bool) {
+    shapeSelectorButton.isSelected = isSelected
   }
 
   private func setupUI() {
