@@ -23,7 +23,7 @@ public final class LineWidthSelector: UIView {
   private let shapeImageView = UIImageView()
   private let knobView = {
     let view = UIView()
-    view.layer.cornerRadius = 32 / 2
+    view.layer.cornerRadius = Constants.knobSize / 2
     view.backgroundColor = UIColor.lightGray
     return view
   }()
@@ -78,7 +78,7 @@ public final class LineWidthSelector: UIView {
 
     knobView.snp.makeConstraints { make in
       make.centerX.centerY.equalToSuperview()
-      make.height.width.equalTo(32)
+      make.height.width.equalTo(Constants.knobSize)
     }
   }
 
@@ -169,13 +169,13 @@ public final class LineWidthSelector: UIView {
     switch gestureRecognizer.state {
     case .changed:
       let location = gestureRecognizer.location(in: self).offsetBy(
-        dx: -size.width / 2 - 16,
+        dx: -size.width / 2 - Constants.knobSize / 2,
         dy: .zero
       )
       let xOffset = clamp(
         location.x,
-        min: -size.width / 2,
-        max: size.width / 2 - 16
+        min: -size.width / 2 + Constants.knobSize / 2,
+        max: size.width / 2 - Constants.knobSize / 2
       )
       knobView.transform = CGAffineTransform(
         translationX: xOffset,
@@ -208,4 +208,8 @@ extension LineWidthSelector: UIGestureRecognizerDelegate {
     )
     return area.contains(location)
   }
+}
+
+private enum Constants {
+  static let knobSize = 32.0
 }
