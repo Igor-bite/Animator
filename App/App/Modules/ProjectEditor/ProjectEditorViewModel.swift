@@ -78,7 +78,11 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   func play() {}
 
   func didSelect(tool: DrawingTool) {
-    drawingConfig.tool = tool
+    if tool == drawingConfig.tool {
+      drawingConfig.tool = nil
+    } else {
+      drawingConfig.tool = tool
+    }
   }
 
   func didTapShapeSelector() {}

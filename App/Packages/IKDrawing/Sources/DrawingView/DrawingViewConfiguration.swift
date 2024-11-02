@@ -3,7 +3,7 @@
 import UIKit
 
 public struct DrawingViewConfiguration {
-  public var tool: DrawingTool
+  public var tool: DrawingTool?
   public var lineWidth: CGFloat
   public var color: UIColor
 
@@ -11,8 +11,12 @@ public struct DrawingViewConfiguration {
     tool == .eraser
   }
 
+  public var canDraw: Bool {
+    tool != nil
+  }
+
   public init(
-    tool: DrawingTool,
+    tool: DrawingTool?,
     lineWidth: CGFloat,
     color: UIColor
   ) {

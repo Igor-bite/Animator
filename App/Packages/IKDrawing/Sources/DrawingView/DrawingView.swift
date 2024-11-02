@@ -202,6 +202,7 @@ extension DrawingView {
 
 extension DrawingView {
   private func handleTouchStart(at location: CGPoint) {
+    guard config.canDraw else { return }
     touchDownPoint = location
     pointsBuffer.append(location)
     if config.isEraser, drawingImageView.layer.mask == nil {
@@ -212,11 +213,13 @@ extension DrawingView {
   }
 
   private func handleTouchMoved(to location: CGPoint) {
+    guard config.canDraw else { return }
     pointsBuffer.append(location)
     updateTopLayer()
   }
 
   private func handleTouchEnded(at location: CGPoint, touchSize: CGFloat) {
+    guard config.canDraw else { return }
     if pointsBuffer.count == 1 {
       let circleSize = touchSize * 2
       addCircleLayer(

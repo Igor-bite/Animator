@@ -15,7 +15,7 @@ protocol BottomToolsGroupOutput: AnyObject {
 }
 
 struct BottomToolsGroupModel {
-  let selectedTool: DrawingTool
+  let selectedTool: DrawingTool?
   let selectedColor: UIColor
 }
 
@@ -25,12 +25,12 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
   private lazy var drawingToolsButtons: SelectableIconsGroup = {
     let icons: [SelectableIconsGroupModel.IconModel] = [
       .init(id: DrawingTool.pen.rawValue, icon: Asset.pencil.image),
-      .init(id: "brush", icon: Asset.brush.image),
+//      .init(id: "brush", icon: Asset.brush.image),
       .init(id: DrawingTool.eraser.rawValue, icon: Asset.eraser.image),
     ]
     let model = SelectableIconsGroupModel(
       icons: icons,
-      intiallySelectedId: model.selectedTool.rawValue
+      intiallySelectedId: model.selectedTool?.rawValue ?? ""
     )
     let view = SelectableIconsGroup(model: model)
     view.delegate = self
