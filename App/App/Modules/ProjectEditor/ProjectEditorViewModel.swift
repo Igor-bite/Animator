@@ -6,8 +6,10 @@ import IKUI
 import UIKit
 
 enum ProjectEditorState {
-  /// Стейт рисования на холсте
-  case drawing
+  /// Стейт готовый для рисования на холсте
+  case readyForDrawing
+  /// Стейт когда рисование в процессе
+  case drawingInProgress
   /// Стейт просмотра фреймов
   case managingFrames
   /// Стейт проигрывания
@@ -19,7 +21,7 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
 
   weak var view: ProjectEditorViewInput?
 
-  var state = CurrentValueSubject<ProjectEditorState, Never>(.drawing)
+  var state = CurrentValueSubject<ProjectEditorState, Never>(.readyForDrawing)
   var drawingConfig: DrawingViewConfiguration {
     didSet {
       updateDrawingViewConfig()
@@ -84,6 +86,7 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     } else {
       drawingConfig.tool = tool
     }
+    view?.updateLineWidthAlpha()
   }
 
   func didTapShapeSelector() {}
@@ -94,6 +97,14 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 extension ProjectEditorViewModel: DrawingViewDelegate {
   func didUpdateCommandHistory() {
     view?.updateTopControls()
+  }
+
+  func didStartDrawing() {
+    state.send(.drawingInProgress)
+  }
+
+  func didEndDrawing() {
+    state.send(.readyForDrawing)
   }
 }
 

@@ -41,22 +41,26 @@ public final class LineWidthSelector: UIView {
     self.size = size
     self.delegate = delegate
     super.init(frame: .zero)
+    set(initialValue: initialValue)
+    UIView.performWithoutAnimation {
+      transform = CGAffineTransform(rotationAngle: -.pi / 2)
+    }
     setupUI()
     renderShapeImage()
     setupGesture()
-
-    let xOffset = initialValue * size.width - size.width / 2
-    knobView.transform = CGAffineTransform(
-      translationX: xOffset,
-      y: .zero
-    )
-
-    transform = CGAffineTransform(rotationAngle: -.pi / 2)
   }
 
   @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+
+  private func set(initialValue: CGFloat) {
+    let xOffset = initialValue * size.width - size.width / 2
+    knobView.transform = CGAffineTransform(
+      translationX: xOffset,
+      y: .zero
+    )
   }
 
   private func setupUI() {

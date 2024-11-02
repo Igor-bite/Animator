@@ -14,6 +14,8 @@ protocol DrawingViewOutput {
 
   func commit(command: DrawingCommand)
   func clearRedoHistory()
+  func didStartDrawing()
+  func didEndDrawing()
 }
 
 final class DrawingView: UIView {
@@ -210,6 +212,7 @@ extension DrawingView {
     }
     updateTopLayer()
     controller.clearRedoHistory()
+    controller.didStartDrawing()
   }
 
   private func handleTouchMoved(to location: CGPoint) {
@@ -240,6 +243,7 @@ extension DrawingView {
     }
 
     flushTopLayer()
+    controller.didEndDrawing()
   }
 
   override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

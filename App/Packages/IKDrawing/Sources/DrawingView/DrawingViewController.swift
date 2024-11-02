@@ -34,6 +34,14 @@ final class DrawingViewController: DrawingViewOutput {
     redoHistory.removeAll()
     delegate?.didUpdateCommandHistory()
   }
+
+  func didStartDrawing() {
+    delegate?.didStartDrawing()
+  }
+
+  func didEndDrawing() {
+    delegate?.didEndDrawing()
+  }
 }
 
 extension DrawingViewController: DrawingViewInteractor {

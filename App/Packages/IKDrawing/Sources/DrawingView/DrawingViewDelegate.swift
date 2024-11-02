@@ -4,4 +4,6 @@ import Foundation
 
 public protocol DrawingViewDelegate: AnyObject {
   func didUpdateCommandHistory()
+  func didStartDrawing()
+  func didEndDrawing()
 }

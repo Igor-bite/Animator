@@ -11,6 +11,7 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateTopControls()
   func updateLineWidthPreview()
   func updateLineWidthPreviewVisibility(isVisible: Bool)
+  func updateLineWidthAlpha()
 }
 
 protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput, LineWidthSelectorDelegate {
@@ -63,9 +64,12 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   private var lineWidthPreviewSize: Constraint?
   private var lineWidthSelectorLeading: Constraint?
 
+  private var bag = CancellableBag()
+
   init(viewModel: ProjectEditorViewOutput) {
     self.viewModel = viewModel
     super.init(nibName: nil, bundle: nil)
+    setupBinding()
   }
 
   @available(*, unavailable)
@@ -100,6 +104,58 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     ) {
       self.lineWidthPreview.alpha = isVisible ? 1 : 0
       self.lineWidthSelector.transform.tx = t
+    }
+  }
+
+  func updateLineWidthAlpha() {
+    let action = {
+      self.lineWidthSelector.alpha = self.viewModel.drawingConfig.canDraw ? 1 : 0
+    }
+
+    if UIView.inheritedAnimationDuration > 0 {
+      action()
+      return
+    }
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      action()
+    }
+  }
+
+  private func setupBinding() {
+    viewModel.state.sink { [weak self] state in
+      self?.handleStateUpdate(to: state)
+    }.store(in: bag)
+  }
+
+  private func handleStateUpdate(to state: ProjectEditorState) {
+    let action = {
+      switch state {
+      case .readyForDrawing:
+        self.updateLineWidthAlpha()
+        self.topToolsView.alpha = 1
+        self.bottomToolsView.alpha = 1
+      case .drawingInProgress:
+        self.lineWidthSelector.alpha = 0
+        self.topToolsView.alpha = 0
+        self.bottomToolsView.alpha = 0
+      case .managingFrames:
+        break
+      case .playing:
+        break
+      }
+    }
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      action()
     }
   }
 
