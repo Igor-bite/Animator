@@ -13,6 +13,7 @@
 		0A1A25E92CD02CA600EABC95 /* PaperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E82CD02CA600EABC95 /* PaperView.swift */; };
 		0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0A1A25E62CD02CA600EABC95 /* Paper.metal */; };
 		0A1A25EE2CD1879B00EABC95 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1A25ED2CD1879B00EABC95 /* SnapKit */; };
+		0A2D26BF2CD66FEC006403C9 /* LineWidthSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A2D26BE2CD66FEC006403C9 /* LineWidthSelector.swift */; };
 		0A3C66202CCE54F7008198BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0A3C661F2CCE54F7008198BC /* Assets.xcassets */; };
 		0A3C66962CCE5765008198BC /* Assets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C667A2CCE5765008198BC /* Assets.swift */; };
 		0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66322CCE56D0008198BC /* ProjectEditorViewController.swift */; };
@@ -33,6 +34,7 @@
 		0A1A25E42CD01C3D00EABC95 /* ProjectEditorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEditorViewModel.swift; sourceTree = "<group>"; };
 		0A1A25E62CD02CA600EABC95 /* Paper.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Paper.metal; sourceTree = "<group>"; };
 		0A1A25E82CD02CA600EABC95 /* PaperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperView.swift; sourceTree = "<group>"; };
+		0A2D26BE2CD66FEC006403C9 /* LineWidthSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineWidthSelector.swift; sourceTree = "<group>"; };
 		0A3C66132CCE54F6008198BC /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A3C661F2CCE54F7008198BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0A3C66242CCE54F7008198BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				0A1A25EB2CD02D0700EABC95 /* PaperView */,
+				0A2D26BE2CD66FEC006403C9 /* LineWidthSelector.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */,
 				0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */,
 				0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */,
+				0A2D26BF2CD66FEC006403C9 /* LineWidthSelector.swift in Sources */,
 				0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */,
 				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
 			);

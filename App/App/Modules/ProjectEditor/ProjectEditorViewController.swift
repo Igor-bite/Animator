@@ -9,9 +9,11 @@ import UIKit
 
 protocol ProjectEditorViewInput: AnyObject {
   func updateTopControls()
+  func updateLineWidthPreview()
+  func updateLineWidthPreviewVisibility(isVisible: Bool)
 }
 
-protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput {
+protocol ProjectEditorViewOutput: AnyObject, TopToolsGroupOutput, BottomToolsGroupOutput, LineWidthSelectorDelegate {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
   var drawingInteractor: DrawingViewInteractor? { get set }
@@ -44,6 +46,23 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     return view
   }()
 
+  private lazy var lineWidthSelector = LineWidthSelector(
+    delegate: viewModel,
+    initialValue: (viewModel.drawingConfig.lineWidth - 4) / 100
+  )
+
+  private lazy var lineWidthPreview = {
+    let view = UIView()
+    view.backgroundColor = Colors.background
+    view.layer.cornerRadius = viewModel.drawingConfig.lineWidth / 2
+    view.isUserInteractionEnabled = false
+    view.alpha = .zero
+    return view
+  }()
+
+  private var lineWidthPreviewSize: Constraint?
+  private var lineWidthSelectorLeading: Constraint?
+
   init(viewModel: ProjectEditorViewOutput) {
     self.viewModel = viewModel
     super.init(nibName: nil, bundle: nil)
@@ -64,12 +83,34 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     topToolsView.updateUI()
   }
 
+  func updateLineWidthPreview() {
+    UIView.performWithoutAnimation {
+      lineWidthPreview.layer.cornerRadius = viewModel.drawingConfig.lineWidth / 2
+    }
+    lineWidthPreviewSize?.update(offset: viewModel.drawingConfig.lineWidth)
+  }
+
+  func updateLineWidthPreviewVisibility(isVisible: Bool) {
+    let t = isVisible ? 46.0 : 0
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      self.lineWidthPreview.alpha = isVisible ? 1 : 0
+      self.lineWidthSelector.transform.tx = t
+    }
+  }
+
   private func setupUI() {
     view.addSubviews(
       topToolsView,
       paperView,
       drawingView,
-      bottomToolsView
+      bottomToolsView,
+      lineWidthSelector,
+      lineWidthPreview
     )
 
     topToolsView.snp.makeConstraints { make in
@@ -94,6 +135,16 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
       make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
       make.leading.equalToSuperview().offset(16)
       make.trailing.equalToSuperview().offset(-16)
+    }
+
+    lineWidthSelector.snp.makeConstraints { make in
+      make.centerY.equalToSuperview()
+      self.lineWidthSelectorLeading = make.leading.equalToSuperview().offset(-112).constraint
+    }
+
+    lineWidthPreview.snp.makeConstraints { make in
+      make.centerX.centerY.equalToSuperview()
+      self.lineWidthPreviewSize = make.height.width.equalTo(0).offset(viewModel.drawingConfig.lineWidth).constraint
     }
   }
 }

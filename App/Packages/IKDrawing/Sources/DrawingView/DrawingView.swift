@@ -44,7 +44,7 @@ final class DrawingView: UIView {
   private var drawingImageView = UIImageView()
   private lazy var renderer: UIGraphicsImageRenderer = {
     let format = UIGraphicsImageRendererFormat()
-    format.scale = 1.0
+    format.scale = UIScreen.main.scale
     format.preferredRange = .standard
     format.opaque = false
     return UIGraphicsImageRenderer(size: bounds.size, format: format)

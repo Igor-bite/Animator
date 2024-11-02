@@ -2,6 +2,7 @@
 
 import Combine
 import IKDrawing
+import IKUI
 import UIKit
 
 enum ProjectEditorState {
@@ -93,5 +94,17 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 extension ProjectEditorViewModel: DrawingViewDelegate {
   func didUpdateCommandHistory() {
     view?.updateTopControls()
+  }
+}
+
+extension ProjectEditorViewModel: LineWidthSelectorDelegate {
+  func valueUpdate(_ value: CGFloat) {
+    drawingConfig.lineWidth = 4 + 100 * value
+    view?.updateLineWidthPreview()
+    view?.updateLineWidthPreviewVisibility(isVisible: true)
+  }
+
+  func released() {
+    view?.updateLineWidthPreviewVisibility(isVisible: false)
   }
 }

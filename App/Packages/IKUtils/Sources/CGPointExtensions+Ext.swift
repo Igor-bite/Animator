@@ -15,6 +15,10 @@ extension CGPoint {
   public var length: CGFloat {
     sqrt(x * x + y * y)
   }
+
+  public func offsetBy(dx: CGFloat, dy: CGFloat) -> CGPoint {
+    CGPoint(x: x + dx, y: y + dy)
+  }
 }
 
 public func + (lhs: CGPoint, rhs: CGPoint) -> CGPoint {
