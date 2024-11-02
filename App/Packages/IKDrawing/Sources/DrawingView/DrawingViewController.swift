@@ -46,18 +46,30 @@ extension DrawingViewController: DrawingViewInteractor {
   }
 
   func undo() {
-    guard canUndo else { return }
+    guard canUndo,
+          let view
+    else { return }
+
     let lastCommand = history.removeLast()
-    redoHistory.append(lastCommand)
-    view?.execute(command: lastCommand.inverted)
+    if let slice = view.slice() {
+      redoHistory.append(.slice(slice))
+    }
+    view.execute(command: lastCommand)
     delegate?.didUpdateCommandHistory()
   }
 
   func redo() {
-    guard canRedo else { return }
+    guard canRedo,
+          let view
+    else { return }
+
     let lastCommand = redoHistory.removeLast()
-    history.append(lastCommand)
-    view?.execute(command: lastCommand)
+    if let slice = view.slice() {
+      history.append(.slice(slice))
+    } else {
+      history.append(.clearAll)
+    }
+    view.execute(command: lastCommand)
     delegate?.didUpdateCommandHistory()
   }
 

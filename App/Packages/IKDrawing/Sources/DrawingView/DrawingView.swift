@@ -6,6 +6,7 @@ import UIKit
 
 protocol DrawingViewInput: AnyObject {
   func execute(command: DrawingCommand)
+  func slice() -> DrawingSlice?
 }
 
 protocol DrawingViewOutput {
@@ -34,7 +35,12 @@ final class DrawingView: UIView {
     strokeColor: .white,
     isEraser: true
   )
-  private var drawingImage: UIImage?
+  private var drawingImage: UIImage? {
+    didSet {
+      drawingImageView.image = drawingImage
+    }
+  }
+
   private var drawingImageView = UIImageView()
   private lazy var renderer: UIGraphicsImageRenderer = {
     let format = UIGraphicsImageRendererFormat()
@@ -43,6 +49,8 @@ final class DrawingView: UIView {
     format.opaque = false
     return UIGraphicsImageRenderer(size: bounds.size, format: format)
   }()
+
+  private lazy var imageSize = bounds.size
 
   init(controller: DrawingViewOutput) {
     self.controller = controller
@@ -79,15 +87,45 @@ final class DrawingView: UIView {
 
 extension DrawingView: DrawingViewInput {
   func execute(command: DrawingCommand) {
-    UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) { [weak self] in
+    let action = { [weak self] in
       guard let self else { return }
       switch command {
-      case let .addLayer(layer):
-//        layersContainer.layer.insertSublayer(layer, below: topLayer)
-        setNeedsDisplay()
-      case let .removeLayer(layer):
-//        layer.removeFromSuperlayer()
-        setNeedsDisplay()
+      case let .slice(drawingSlice):
+        applySlice(drawingSlice)
+      case .clearAll:
+        drawingImage = nil
+      }
+    }
+
+    UIView.transition(
+      with: self,
+      duration: 0.2,
+      options: .transitionCrossDissolve
+    ) {
+      action()
+    }
+  }
+
+  func slice() -> DrawingSlice? {
+    let rect = CGRect(x: .zero, y: .zero, width: imageSize.width, height: imageSize.height)
+    guard let subImage = drawingImage?.cgImage?.cropping(to: rect) else { return nil }
+    return DrawingSlice(image: subImage, rect: rect)
+  }
+
+  private func applySlice(_ slice: DrawingSlice) {
+    let imageSize = imageSize
+    drawingImage = renderer.image { context in
+      context.cgContext.clear(CGRect(origin: .zero, size: imageSize))
+      context.cgContext.setBlendMode(.copy)
+      if let image = self.drawingImage {
+        image.draw(at: .zero)
+      }
+      if let image = slice.image {
+        context.cgContext.translateBy(x: imageSize.width / 2.0, y: imageSize.height / 2.0)
+        context.cgContext.scaleBy(x: 1.0, y: -1.0)
+        context.cgContext.translateBy(x: -imageSize.width / 2.0, y: -imageSize.height / 2.0)
+        context.cgContext.translateBy(x: slice.rect.minX, y: imageSize.height - slice.rect.maxY)
+        context.cgContext.draw(image, in: CGRect(origin: .zero, size: slice.rect.size))
       }
     }
   }
@@ -118,7 +156,7 @@ extension DrawingView {
   private func addShapeLayer(_ shape: UIBezierPath, lineWidth: CGFloat, color: UIColor) {
     let imageSize = bounds.size
 
-    drawingImage = renderer.image { ctx in
+    let newImage = renderer.image { ctx in
       ctx.cgContext.setBlendMode(.copy)
       ctx.cgContext.clear(CGRect(origin: .zero, size: imageSize))
       if let image = drawingImage {
@@ -144,10 +182,12 @@ extension DrawingView {
       }
       // TODO: extract drawing logic of path into separate object
     }
-
-    drawingImageView.image = drawingImage
-    // TODO: вернуть поддержку undo / redo с помощью сохранения промежуточных изображений слоёв
-//    controller.commit(command: .addLayer(newShapeLayer))
+    if drawingImage == nil {
+      controller.commit(command: .clearAll)
+    } else if let slice = slice() {
+      controller.commit(command: .slice(slice))
+    }
+    drawingImage = newImage
   }
 
   private func clearTopLayer() {
