@@ -110,7 +110,8 @@ extension DrawingView: DrawingViewInput {
 
   func slice() -> DrawingSlice? {
     let rect = CGRect(x: .zero, y: .zero, width: imageSize.width, height: imageSize.height)
-    guard let subImage = drawingImage?.cgImage?.cropping(to: rect) else { return nil }
+    guard let subImage = drawingImage?.cgImage else { return nil }
+
     return DrawingSlice(image: subImage, rect: rect)
   }
 
@@ -118,17 +119,15 @@ extension DrawingView: DrawingViewInput {
     let imageSize = imageSize
     drawingImage = renderer.image { context in
       context.cgContext.clear(CGRect(origin: .zero, size: imageSize))
-      context.cgContext.setBlendMode(.copy)
-      if let image = self.drawingImage {
-        image.draw(at: .zero)
+      guard let image = slice.image else {
+        assertionFailure()
+        return
       }
-      if let image = slice.image {
-        context.cgContext.translateBy(x: imageSize.width / 2.0, y: imageSize.height / 2.0)
-        context.cgContext.scaleBy(x: 1.0, y: -1.0)
-        context.cgContext.translateBy(x: -imageSize.width / 2.0, y: -imageSize.height / 2.0)
-        context.cgContext.translateBy(x: slice.rect.minX, y: imageSize.height - slice.rect.maxY)
-        context.cgContext.draw(image, in: CGRect(origin: .zero, size: slice.rect.size))
-      }
+      context.cgContext.translateBy(x: imageSize.width / 2.0, y: imageSize.height / 2.0)
+      context.cgContext.scaleBy(x: 1.0, y: -1.0)
+      context.cgContext.translateBy(x: -imageSize.width / 2.0, y: -imageSize.height / 2.0)
+      context.cgContext.translateBy(x: slice.rect.minX, y: imageSize.height - slice.rect.maxY)
+      context.cgContext.draw(image, in: CGRect(origin: .zero, size: slice.rect.size))
     }
   }
 }
