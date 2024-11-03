@@ -7,6 +7,8 @@ import UIKit
 protocol DrawingViewInput: AnyObject {
   func execute(command: DrawingCommand)
   func slice() -> DrawingSlice?
+  func currentSketchImage() -> UIImage?
+  func reset()
 }
 
 protocol DrawingViewOutput {
@@ -115,6 +117,20 @@ extension DrawingView: DrawingViewInput {
     return DrawingSlice(image: subImage, rect: rect)
   }
 
+  func currentSketchImage() -> UIImage? {
+    guard let image = drawingImage?.cgImage else { return nil }
+    return UIImage(cgImage: image)
+  }
+
+  func reset() {
+    drawingImage = nil
+    flushTopLayer()
+  }
+}
+
+// MARK: - Layers
+
+extension DrawingView {
   private func applySlice(_ slice: DrawingSlice) {
     let imageSize = imageSize
     drawingImage = renderer.image { context in
@@ -130,11 +146,7 @@ extension DrawingView: DrawingViewInput {
       context.cgContext.draw(image, in: CGRect(origin: .zero, size: slice.rect.size))
     }
   }
-}
 
-// MARK: - Layers
-
-extension DrawingView {
   private func updateTopLayer() {
     let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
     let topLayer = config.isEraser ? eraserTopLayer : topLayer

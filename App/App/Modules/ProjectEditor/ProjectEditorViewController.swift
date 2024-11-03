@@ -13,6 +13,7 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateLineWidthPreviewVisibility(isVisible: Bool)
   func updateLineWidthAlpha()
   func updateColorSelector(shouldClose: Bool)
+  func updatePreviousFrame(with image: UIImage?)
 }
 
 protocol ProjectEditorViewOutput: AnyObject,
@@ -24,9 +25,10 @@ protocol ProjectEditorViewOutput: AnyObject,
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
   var drawingInteractor: DrawingViewInteractor? { get set }
+  var drawingAreaSize: CGSize { get set }
 }
 
-final class ProjectEditorViewController: UIViewController, ProjectEditorViewInput {
+final class ProjectEditorViewController: UIViewController {
   private let viewModel: ProjectEditorViewOutput
   private lazy var topToolsView = {
     let view = TopToolsGroup()
@@ -40,6 +42,14 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
       config: viewModel.drawingConfig
     )
     viewModel.drawingInteractor = interactor
+    view.smoothCornerRadius = Constants.drawingViewCornerRadius
+    return view
+  }()
+
+  private let previousFrameImageView = {
+    let view = UIImageView()
+    view.smoothCornerRadius = Constants.drawingViewCornerRadius
+    view.alpha = 0.5
     return view
   }()
 
@@ -86,7 +96,6 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   init(viewModel: ProjectEditorViewOutput) {
     self.viewModel = viewModel
     super.init(nibName: nil, bundle: nil)
-    setupBinding()
   }
 
   @available(*, unavailable)
@@ -98,8 +107,107 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     super.viewDidLoad()
     view.backgroundColor = Colors.background
     setupUI()
+    setupBinding()
   }
 
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    viewModel.drawingAreaSize = drawingView.bounds.size
+  }
+
+  private func setupBinding() {
+    viewModel.state.sink { [weak self] state in
+      self?.handleStateUpdate(to: state)
+    }.store(in: bag)
+  }
+
+  private func handleStateUpdate(to state: ProjectEditorState) {
+    let action = {
+      switch state {
+      case .readyForDrawing:
+        self.updateLineWidthAlpha()
+        self.topToolsView.alpha = 1
+        self.bottomToolsView.alpha = 1
+        self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
+      case .drawingInProgress:
+        self.lineWidthSelector.alpha = 0
+        self.topToolsView.alpha = 0
+        self.bottomToolsView.alpha = 0
+        if self.isColorSelectorVisible {
+          self.updateColorSelector(shouldClose: true)
+        }
+      case .managingFrames:
+        break
+      case .playing:
+        break
+      }
+    }
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      action()
+    }
+  }
+
+  private func setupUI() {
+    view.addSubviews(
+      topToolsView,
+      paperView,
+      previousFrameImageView,
+      drawingView,
+      bottomToolsView,
+      lineWidthSelector,
+      lineWidthPreview,
+      colorSelectorView
+    )
+
+    topToolsView.snp.makeConstraints { make in
+      make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
+    }
+
+    paperView.snp.makeConstraints { make in
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
+      make.top.equalTo(topToolsView.snp.bottom).offset(24)
+      make.bottom.equalTo(bottomToolsView.snp.top).offset(-24)
+    }
+
+    drawingView.snp.makeConstraints { make in
+      make.edges.equalTo(paperView)
+    }
+    previousFrameImageView.snp.makeConstraints { make in
+      make.edges.equalTo(paperView)
+    }
+
+    bottomToolsView.snp.makeConstraints { make in
+      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+      make.leading.equalToSuperview().offset(16)
+      make.trailing.equalToSuperview().offset(-16)
+    }
+
+    lineWidthSelector.snp.makeConstraints { make in
+      make.centerY.equalToSuperview()
+      self.lineWidthSelectorLeading = make.leading.equalToSuperview().offset(-112).constraint
+    }
+
+    lineWidthPreview.snp.makeConstraints { make in
+      make.centerX.centerY.equalToSuperview()
+      self.lineWidthPreviewSize = make.height.width.equalTo(0).offset(viewModel.drawingConfig.lineWidth).constraint
+    }
+
+    colorSelectorView.snp.makeConstraints { make in
+      make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
+      make.centerX.equalToSuperview()
+    }
+  }
+}
+
+extension ProjectEditorViewController: ProjectEditorViewInput {
   func updateTopControls() {
     topToolsView.updateUI()
   }
@@ -159,91 +267,11 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     }
   }
 
-  private func setupBinding() {
-    viewModel.state.sink { [weak self] state in
-      self?.handleStateUpdate(to: state)
-    }.store(in: bag)
+  func updatePreviousFrame(with image: UIImage?) {
+    previousFrameImageView.image = image
   }
+}
 
-  private func handleStateUpdate(to state: ProjectEditorState) {
-    let action = {
-      switch state {
-      case .readyForDrawing:
-        self.updateLineWidthAlpha()
-        self.topToolsView.alpha = 1
-        self.bottomToolsView.alpha = 1
-        self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
-      case .drawingInProgress:
-        self.lineWidthSelector.alpha = 0
-        self.topToolsView.alpha = 0
-        self.bottomToolsView.alpha = 0
-        if self.isColorSelectorVisible {
-          self.updateColorSelector(shouldClose: true)
-        }
-      case .managingFrames:
-        break
-      case .playing:
-        break
-      }
-    }
-
-    UIView.animate(
-      withDuration: 0.2,
-      delay: .zero,
-      options: .curveEaseInOut
-    ) {
-      action()
-    }
-  }
-
-  private func setupUI() {
-    view.addSubviews(
-      topToolsView,
-      paperView,
-      drawingView,
-      bottomToolsView,
-      lineWidthSelector,
-      lineWidthPreview,
-      colorSelectorView
-    )
-
-    topToolsView.snp.makeConstraints { make in
-      make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-      make.leading.equalToSuperview().offset(16)
-      make.trailing.equalToSuperview().offset(-16)
-    }
-
-    paperView.snp.makeConstraints { make in
-      make.leading.equalToSuperview().offset(16)
-      make.trailing.equalToSuperview().offset(-16)
-      make.top.equalTo(topToolsView.snp.bottom).offset(24)
-      make.bottom.equalTo(bottomToolsView.snp.top).offset(-24)
-    }
-
-    drawingView.snp.makeConstraints { make in
-      make.edges.equalTo(paperView)
-    }
-    drawingView.smoothCornerRadius = 20
-
-    bottomToolsView.snp.makeConstraints { make in
-      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-      make.leading.equalToSuperview().offset(16)
-      make.trailing.equalToSuperview().offset(-16)
-    }
-
-    lineWidthSelector.snp.makeConstraints { make in
-      make.centerY.equalToSuperview()
-      self.lineWidthSelectorLeading = make.leading.equalToSuperview().offset(-112).constraint
-    }
-
-    lineWidthPreview.snp.makeConstraints { make in
-      make.centerX.centerY.equalToSuperview()
-      self.lineWidthPreviewSize = make.height.width.equalTo(0).offset(viewModel.drawingConfig.lineWidth).constraint
-    }
-
-    colorSelectorView.snp.makeConstraints { make in
-      make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
-      make.centerX.equalToSuperview()
-    }
-  }
+private enum Constants {
+  static let drawingViewCornerRadius = 20.0
 }

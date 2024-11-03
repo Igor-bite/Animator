@@ -1,6 +1,6 @@
 // Created by Igor Klyuzhev in 2024
 
-import Foundation
+import UIKit
 
 public protocol DrawingViewInteractor {
   var delegate: DrawingViewDelegate? { get set }
@@ -10,6 +10,8 @@ public protocol DrawingViewInteractor {
   func undo()
   func redo()
   func didUpdateConfig(config: DrawingViewConfiguration)
+  func produceCurrentSketchImage() -> UIImage?
+  func resetForNewSketch()
 }
 
 final class DrawingViewController: DrawingViewOutput {
@@ -83,5 +85,16 @@ extension DrawingViewController: DrawingViewInteractor {
 
   func didUpdateConfig(config: DrawingViewConfiguration) {
     self.config = config
+  }
+
+  func produceCurrentSketchImage() -> UIImage? {
+    view?.currentSketchImage()
+  }
+
+  func resetForNewSketch() {
+    history.removeAll()
+    redoHistory.removeAll()
+    view?.reset()
+    delegate?.didUpdateCommandHistory()
   }
 }
