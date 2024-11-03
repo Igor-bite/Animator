@@ -8,7 +8,7 @@ public struct PaperView: View {
   public init() {}
 
   public var body: some View {
-    RoundedRectangle(cornerRadius: 20)
+    Rectangle()
       .fill(
         .paper(isLightTheme: colorScheme == .light)
       )

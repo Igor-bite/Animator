@@ -11,7 +11,7 @@ enum ProjectEditorState {
   /// Стейт когда рисование в процессе
   case drawingInProgress
   /// Стейт просмотра фреймов
-  case managingFrames
+  case managingFrames(frames: [FrameModel])
   /// Стейт проигрывания
   case playing
 
@@ -103,12 +103,12 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 
   func removeLayer() {}
 
-  func addNewLayer() {
-    saveLayer(needsReset: true)
-  }
-
   func duplicateLayer() {
     saveLayer(needsReset: false)
+  }
+
+  func addNewLayer() {
+    saveLayer(needsReset: true)
   }
 
   private func saveLayer(needsReset: Bool) {
@@ -121,7 +121,11 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   }
 
   func openLayersView() {
-    duplicateLayer()
+    if case .managingFrames = state.value {
+      state.send(.readyForDrawing)
+    } else {
+      state.send(.managingFrames(frames: frames))
+    }
   }
 
   func share() {

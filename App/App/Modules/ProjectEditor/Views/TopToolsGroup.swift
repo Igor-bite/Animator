@@ -19,6 +19,7 @@ protocol TopToolsGroupOutput: AnyObject {
 
   func removeLayer()
   func addNewLayer()
+  func duplicateLayer()
   func openLayersView()
 
   func share()
@@ -51,6 +52,11 @@ final class TopToolsGroup: UIView {
     icon: Asset.bin.image
   )
 
+  private let duplicateLayerButton = TapIcon(
+    size: .large(),
+    icon: Asset.duplicate.image
+  )
+
   private let addLayerButton = TapIcon(
     size: .large(),
     icon: Asset.plusFile.image
@@ -71,7 +77,7 @@ final class TopToolsGroup: UIView {
 
   private let shareButton = TapIcon(
     size: .large(),
-    icon: UIImage(systemName: "square.and.arrow.up") ?? UIImage()
+    icon: Asset.share.image
   )
 
   private let playPauseStack = UIStackView()
@@ -99,6 +105,7 @@ final class TopToolsGroup: UIView {
     layerToolsStack.spacing = 16
     layerToolsStack.addArrangedSubviews([
       removeLayerButton,
+      duplicateLayerButton,
       addLayerButton,
       layersViewButton,
     ])
@@ -131,6 +138,9 @@ final class TopToolsGroup: UIView {
     }
     removeLayerButton.addAction { [weak self] in
       self?.output?.removeLayer()
+    }
+    duplicateLayerButton.addAction { [weak self] in
+      self?.output?.duplicateLayer()
     }
     addLayerButton.addAction { [weak self] in
       self?.output?.addNewLayer()
@@ -188,7 +198,7 @@ extension TopToolsGroup: StateDependentView {
       playPauseStack.alpha = 0
     case .managingFrames:
       redoUndoStack.alpha = 0
-      layerToolsStack.alpha = 0
+      layerToolsStack.alpha = 1
       playPauseStack.alpha = 0
     case .playing:
       redoUndoStack.alpha = 0

@@ -30,6 +30,9 @@
 		0ABEAAD12CD7A37D005E5758 /* FramesPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD02CD7A37D005E5758 /* FramesPlayerController.swift */; };
 		0ABEAAD32CD7A6DD005E5758 /* FramesPlayerAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */; };
 		0ABEAAD52CD7B376005E5758 /* GIFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD42CD7B376005E5758 /* GIFExporter.swift */; };
+		0ABEAAD72CD7DBA3005E5758 /* LayersPreviewScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD62CD7DBA3005E5758 /* LayersPreviewScrollView.swift */; };
+		0ABEAADA2CD7DD8F005E5758 /* LayerPreviewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD92CD7DD8F005E5758 /* LayerPreviewModel.swift */; };
+		0ABEAADC2CD7DDA6005E5758 /* LayerPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAADB2CD7DDA6005E5758 /* LayerPreviewCell.swift */; };
 		0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F342CD3964A009790AC /* PaperUIView.swift */; };
 		0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */; };
 		0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */; };
@@ -60,6 +63,9 @@
 		0ABEAAD02CD7A37D005E5758 /* FramesPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerController.swift; sourceTree = "<group>"; };
 		0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerAssembly.swift; sourceTree = "<group>"; };
 		0ABEAAD42CD7B376005E5758 /* GIFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GIFExporter.swift; sourceTree = "<group>"; };
+		0ABEAAD62CD7DBA3005E5758 /* LayersPreviewScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayersPreviewScrollView.swift; sourceTree = "<group>"; };
+		0ABEAAD92CD7DD8F005E5758 /* LayerPreviewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerPreviewModel.swift; sourceTree = "<group>"; };
+		0ABEAADB2CD7DDA6005E5758 /* LayerPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayerPreviewCell.swift; sourceTree = "<group>"; };
 		0AD20F342CD3964A009790AC /* PaperUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperUIView.swift; sourceTree = "<group>"; };
 		0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopToolsGroup.swift; sourceTree = "<group>"; };
 		0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomToolsGroup.swift; sourceTree = "<group>"; };
@@ -143,6 +149,7 @@
 				0A2D26C02CD68AB2006403C9 /* ColorSelectorView.swift */,
 				0A2D26C22CD69781006403C9 /* ColorSliderWithInput.swift */,
 				0A2D26C42CD6A2A0006403C9 /* ColorSlider.swift */,
+				0ABEAAD82CD7DBB8005E5758 /* LayersPreview */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -227,6 +234,16 @@
 				0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */,
 			);
 			path = FramesPlayer;
+			sourceTree = "<group>";
+		};
+		0ABEAAD82CD7DBB8005E5758 /* LayersPreview */ = {
+			isa = PBXGroup;
+			children = (
+				0ABEAAD62CD7DBA3005E5758 /* LayersPreviewScrollView.swift */,
+				0ABEAAD92CD7DD8F005E5758 /* LayerPreviewModel.swift */,
+				0ABEAADB2CD7DDA6005E5758 /* LayerPreviewCell.swift */,
+			);
+			path = LayersPreview;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -340,6 +357,8 @@
 				0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */,
 				0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */,
 				0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */,
+				0ABEAADC2CD7DDA6005E5758 /* LayerPreviewCell.swift in Sources */,
+				0ABEAAD72CD7DBA3005E5758 /* LayersPreviewScrollView.swift in Sources */,
 				0ABEAAD12CD7A37D005E5758 /* FramesPlayerController.swift in Sources */,
 				0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */,
 				0A3C66962CCE5765008198BC /* Assets.swift in Sources */,
@@ -350,6 +369,7 @@
 				0A2D26BF2CD66FEC006403C9 /* LineWidthSelector.swift in Sources */,
 				0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */,
 				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
+				0ABEAADA2CD7DD8F005E5758 /* LayerPreviewModel.swift in Sources */,
 				0A2D26C52CD6A2A0006403C9 /* ColorSlider.swift in Sources */,
 				0A2D26C12CD68AB2006403C9 /* ColorSelectorView.swift in Sources */,
 				0ABEAAD32CD7A6DD005E5758 /* FramesPlayerAssembly.swift in Sources */,

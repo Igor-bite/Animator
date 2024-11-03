@@ -6,9 +6,10 @@ final class FrameModel {
   private static let queue = DispatchQueue(label: "FrameModel.queue", qos: .default)
 
   private var _image: UIImage?
-  private let uuid: UUID
   private let path: String?
   private var saveToDiskWorkitem: DispatchWorkItem?
+
+  let uuid: UUID
 
   var image: UIImage? {
     if let image = _image {

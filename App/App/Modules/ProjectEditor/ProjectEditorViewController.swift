@@ -42,7 +42,12 @@ final class ProjectEditorViewController: UIViewController {
     return view
   }()
 
-  private let paperView = PaperUIView()
+  private let paperView = {
+    let view = PaperUIView()
+    view.smoothCornerRadius = Constants.drawingViewCornerRadius
+    return view
+  }()
+
   private lazy var drawingView = {
     let (view, interactor) = DrawingViewAssembly.make(
       config: viewModel.drawingConfig
@@ -58,7 +63,6 @@ final class ProjectEditorViewController: UIViewController {
     )
     viewModel.playerInteractor = interactor
     view.smoothCornerRadius = Constants.drawingViewCornerRadius
-    view.clipsToBounds = true
     return view
   }()
 
@@ -106,6 +110,12 @@ final class ProjectEditorViewController: UIViewController {
     return view
   }()
 
+  private lazy var layersPreviewScrollView = {
+    let view = LayersPreviewScrollView()
+    view.alpha = 0
+    return view
+  }()
+
   private var isColorSelectorVisible = false
 
   private var bag = CancellableBag()
@@ -130,6 +140,7 @@ final class ProjectEditorViewController: UIViewController {
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     viewModel.drawingAreaSize = drawingView.bounds.size
+    layersPreviewScrollView.itemAspectRatio = paperView.frame.height / paperView.frame.width
   }
 
   private func setupBinding() {
@@ -142,6 +153,7 @@ final class ProjectEditorViewController: UIViewController {
     let action = {
       self.topToolsView.stateDidUpdate(newState: state)
       self.bottomToolsView.stateDidUpdate(newState: state)
+      self.layersPreviewScrollView.stateDidUpdate(newState: state)
 
       switch state {
       case .readyForDrawing:
@@ -160,7 +172,10 @@ final class ProjectEditorViewController: UIViewController {
           self.updateColorSelector(shouldClose: true)
         }
       case .managingFrames:
-        break
+        self.lineWidthSelector.alpha = 0
+        if self.isColorSelectorVisible {
+          self.updateColorSelector(shouldClose: true)
+        }
       case .playing:
         UIView.performWithoutAnimation {
           self.framesPlayerView.alpha = 1
@@ -198,7 +213,8 @@ final class ProjectEditorViewController: UIViewController {
       bottomToolsView,
       lineWidthSelector,
       lineWidthPreview,
-      colorSelectorView
+      colorSelectorView,
+      layersPreviewScrollView
     )
 
     topToolsView.snp.makeConstraints { make in
@@ -243,6 +259,12 @@ final class ProjectEditorViewController: UIViewController {
     colorSelectorView.snp.makeConstraints { make in
       make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
       make.centerX.equalToSuperview()
+    }
+
+    layersPreviewScrollView.snp.makeConstraints { make in
+      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+      make.leading.equalToSuperview()
+      make.trailing.equalToSuperview()
     }
   }
 }
