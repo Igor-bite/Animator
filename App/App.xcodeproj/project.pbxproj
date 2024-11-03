@@ -26,6 +26,9 @@
 		0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */; };
 		0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3C66B82CCE67C2008198BC /* IKUtils */; };
 		0ABEAACC2CD79679005E5758 /* FrameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAACB2CD79679005E5758 /* FrameModel.swift */; };
+		0ABEAACF2CD7A376005E5758 /* FramesPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAACE2CD7A376005E5758 /* FramesPlayerView.swift */; };
+		0ABEAAD12CD7A37D005E5758 /* FramesPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD02CD7A37D005E5758 /* FramesPlayerController.swift */; };
+		0ABEAAD32CD7A6DD005E5758 /* FramesPlayerAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */; };
 		0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F342CD3964A009790AC /* PaperUIView.swift */; };
 		0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */; };
 		0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */; };
@@ -52,6 +55,9 @@
 		0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		0A3C667A2CCE5765008198BC /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
 		0ABEAACB2CD79679005E5758 /* FrameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameModel.swift; sourceTree = "<group>"; };
+		0ABEAACE2CD7A376005E5758 /* FramesPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerView.swift; sourceTree = "<group>"; };
+		0ABEAAD02CD7A37D005E5758 /* FramesPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerController.swift; sourceTree = "<group>"; };
+		0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerAssembly.swift; sourceTree = "<group>"; };
 		0AD20F342CD3964A009790AC /* PaperUIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperUIView.swift; sourceTree = "<group>"; };
 		0AD20F362CD39AEA009790AC /* TopToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopToolsGroup.swift; sourceTree = "<group>"; };
 		0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomToolsGroup.swift; sourceTree = "<group>"; };
@@ -142,6 +148,7 @@
 		0A3C66402CCE56D0008198BC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				0ABEAACD2CD7A36A005E5758 /* FramesPlayer */,
 				0A3C66352CCE56D0008198BC /* ProjectEditor */,
 				0A3C663F2CCE56D0008198BC /* Views */,
 			);
@@ -207,6 +214,16 @@
 				0AD20F382CD416F0009790AC /* BottomToolsGroup.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		0ABEAACD2CD7A36A005E5758 /* FramesPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				0ABEAACE2CD7A376005E5758 /* FramesPlayerView.swift */,
+				0ABEAAD02CD7A37D005E5758 /* FramesPlayerController.swift */,
+				0ABEAAD22CD7A6DD005E5758 /* FramesPlayerAssembly.swift */,
+			);
+			path = FramesPlayer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -319,16 +336,19 @@
 				0A1A25EA2CD02CA600EABC95 /* Paper.metal in Sources */,
 				0AD20F352CD3964A009790AC /* PaperUIView.swift in Sources */,
 				0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */,
+				0ABEAAD12CD7A37D005E5758 /* FramesPlayerController.swift in Sources */,
 				0A3C66982CCE5812008198BC /* ProjectEditorViewController.swift in Sources */,
 				0A3C66962CCE5765008198BC /* Assets.swift in Sources */,
 				0AD20F392CD416F0009790AC /* BottomToolsGroup.swift in Sources */,
 				0A3C669A2CCE582C008198BC /* ApplicationCoordinator.swift in Sources */,
+				0ABEAACF2CD7A376005E5758 /* FramesPlayerView.swift in Sources */,
 				0A1A25E32CD01C3600EABC95 /* ProjectEditorCoordinator.swift in Sources */,
 				0A2D26BF2CD66FEC006403C9 /* LineWidthSelector.swift in Sources */,
 				0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */,
 				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
 				0A2D26C52CD6A2A0006403C9 /* ColorSlider.swift in Sources */,
 				0A2D26C12CD68AB2006403C9 /* ColorSelectorView.swift in Sources */,
+				0ABEAAD32CD7A6DD005E5758 /* FramesPlayerAssembly.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

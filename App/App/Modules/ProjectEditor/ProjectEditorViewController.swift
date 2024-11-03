@@ -25,6 +25,7 @@ protocol ProjectEditorViewOutput: AnyObject,
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
   var drawingInteractor: DrawingViewInteractor? { get set }
+  var playerInteractor: FramesPlayerInteractor? { get set }
   var drawingAreaSize: CGSize { get set }
 }
 
@@ -46,9 +47,20 @@ final class ProjectEditorViewController: UIViewController {
     return view
   }()
 
+  private lazy var framesPlayerView = {
+    let (view, interactor) = FramesPlayerAssembly.make(
+      with: FramesPlayerConfig(fps: 10)
+    )
+    viewModel.playerInteractor = interactor
+    view.smoothCornerRadius = Constants.drawingViewCornerRadius
+    view.clipsToBounds = true
+    return view
+  }()
+
   private let previousFrameImageView = {
     let view = UIImageView()
     view.smoothCornerRadius = Constants.drawingViewCornerRadius
+    view.clipsToBounds = true
     view.alpha = 0.5
     return view
   }()
@@ -125,29 +137,64 @@ final class ProjectEditorViewController: UIViewController {
     let action = {
       switch state {
       case .readyForDrawing:
+        UIView.performWithoutAnimation {
+          self.framesPlayerView.isHidden = true
+          self.framesPlayerView.alpha = 0
+        }
         self.updateLineWidthAlpha()
         self.topToolsView.alpha = 1
+        self.topToolsView.isHidden = false
         self.bottomToolsView.alpha = 1
+        self.bottomToolsView.isHidden = false
+        self.previousFrameImageView.alpha = 0.5
+        self.previousFrameImageView.isHidden = false
+        self.drawingView.alpha = 1
+        self.drawingView.isHidden = false
         self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
       case .drawingInProgress:
         self.lineWidthSelector.alpha = 0
+        self.lineWidthSelector.isHidden = true
         self.topToolsView.alpha = 0
+        self.topToolsView.isHidden = true
         self.bottomToolsView.alpha = 0
+        self.bottomToolsView.isHidden = true
+        self.previousFrameImageView.alpha = 0.5
+        self.previousFrameImageView.isHidden = false
+
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
         }
       case .managingFrames:
         break
       case .playing:
-        break
+        UIView.performWithoutAnimation {
+          self.framesPlayerView.isHidden = false
+          self.framesPlayerView.alpha = 1
+        }
+        self.lineWidthSelector.alpha = 0
+        self.lineWidthSelector.isHidden = true
+        self.previousFrameImageView.alpha = 0
+        self.previousFrameImageView.isHidden = true
+        self.bottomToolsView.alpha = 0
+        self.bottomToolsView.isHidden = true
+        self.drawingView.alpha = 0
+        self.drawingView.isHidden = true
+
+        if self.isColorSelectorVisible {
+          self.updateColorSelector(shouldClose: true)
+        }
       }
     }
 
-    UIView.animate(
-      withDuration: 0.2,
-      delay: .zero,
-      options: .curveEaseInOut
-    ) {
+    if state.needsAnimatedChange {
+      UIView.animate(
+        withDuration: 0.2,
+        delay: .zero,
+        options: .curveEaseInOut
+      ) {
+        action()
+      }
+    } else {
       action()
     }
   }
@@ -156,6 +203,7 @@ final class ProjectEditorViewController: UIViewController {
     view.addSubviews(
       topToolsView,
       paperView,
+      framesPlayerView,
       previousFrameImageView,
       drawingView,
       bottomToolsView,
@@ -181,6 +229,9 @@ final class ProjectEditorViewController: UIViewController {
       make.edges.equalTo(paperView)
     }
     previousFrameImageView.snp.makeConstraints { make in
+      make.edges.equalTo(paperView)
+    }
+    framesPlayerView.snp.makeConstraints { make in
       make.edges.equalTo(paperView)
     }
 
@@ -235,6 +286,7 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
   func updateLineWidthAlpha() {
     let action = {
       self.lineWidthSelector.alpha = self.viewModel.drawingConfig.canDraw ? 1 : 0
+      self.lineWidthSelector.isHidden = self.viewModel.drawingConfig.canDraw ? false : true
     }
 
     if UIView.inheritedAnimationDuration > 0 {
@@ -264,6 +316,7 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
       options: .curveEaseInOut
     ) {
       self.colorSelectorView.alpha = shouldBeVisible ? 1 : 0
+      self.colorSelectorView.isHidden = shouldBeVisible ? false : true
     }
   }
 

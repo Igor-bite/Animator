@@ -14,12 +14,22 @@ enum ProjectEditorState {
   case managingFrames
   /// Стейт проигрывания
   case playing
+
+  var needsAnimatedChange: Bool {
+    switch self {
+    case .readyForDrawing,
+         .drawingInProgress,
+         .managingFrames:
+      true
+    case .playing:
+      false
+    }
+  }
 }
 
 final class ProjectEditorViewModel: ProjectEditorViewOutput {
   private let coordinator: ProjectEditorCoordinating
   private var frames = [FrameModel]()
-  private var currentFrameIndex = 0
   private lazy var imageRenderer: UIGraphicsImageRenderer = {
     let format = UIGraphicsImageRendererFormat()
     format.scale = UIScreen.main.scale
@@ -48,6 +58,8 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
       drawingInteractor?.delegate = self
     }
   }
+
+  var playerInteractor: FramesPlayerInteractor?
 
   var drawingAreaSize: CGSize = .zero
 
@@ -97,7 +109,6 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   private func saveLayer(needsReset: Bool) {
     let frameImage = drawingInteractor?.produceCurrentSketchImage()
     frames.append(FrameModel(image: frameImage))
-    currentFrameIndex += 1
     view?.updatePreviousFrame(with: frameImage)
     if needsReset {
       drawingInteractor?.resetForNewSketch()
@@ -109,23 +120,15 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   }
 
   func pause() {
-    currentFrameIndex -= 1
-    guard let frame = frames[safe: currentFrameIndex] else {
-      currentFrameIndex = frames.count
-      pause()
-      return
-    }
-    view?.updatePreviousFrame(with: frame.image)
+    state.send(.readyForDrawing)
+    playerInteractor?.configure(with: [])
+    playerInteractor?.stop()
   }
 
   func play() {
-    currentFrameIndex += 1
-    guard let frame = frames[safe: currentFrameIndex] else {
-      currentFrameIndex = -1
-      play()
-      return
-    }
-    view?.updatePreviousFrame(with: frame.image)
+    state.send(.playing)
+    playerInteractor?.configure(with: frames)
+    playerInteractor?.start()
   }
 
   func didSelect(tool: DrawingTool) {
