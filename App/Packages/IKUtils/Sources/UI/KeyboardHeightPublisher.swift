@@ -4,14 +4,20 @@ import Combine
 import UIKit
 
 extension Publishers {
-  public static var keyboardHeight: AnyPublisher<CGFloat, Never> {
-    let willShow: Publishers.Map<NotificationCenter.Publisher, CGFloat> = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
-      .map(\._keyboardHeight)
+  public static var keyboardFrame: AnyPublisher<CGRect, Never> {
+    let willShow: Publishers.Map<NotificationCenter.Publisher, CGRect> = NotificationCenter.default.publisher(for: UIApplication.keyboardWillShowNotification)
+      .map(\._keyboardFrame)
 
     let willHide = NotificationCenter.default.publisher(for: UIApplication.keyboardWillHideNotification)
-      .map { _ in CGFloat(0) }
+      .map { _ in CGRect.zero }
 
     return MergeMany(willShow, willHide)
+      .eraseToAnyPublisher()
+  }
+
+  public static var keyboardHeight: AnyPublisher<CGFloat, Never> {
+    keyboardFrame
+      .map(\.height)
       .eraseToAnyPublisher()
   }
 
@@ -23,8 +29,7 @@ extension Publishers {
 }
 
 extension Notification {
-  // name collision
-  fileprivate var _keyboardHeight: CGFloat {
-    (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect)?.height ?? 0
+  fileprivate var _keyboardFrame: CGRect {
+    (userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect) ?? .zero
   }
 }

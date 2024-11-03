@@ -8,7 +8,7 @@ public enum Colors {
   public static let foreground = UIColor(light: Palette.black, dark: Palette.white)
   public static let disabled = Palette.gray
 
-  enum Palette {
+  public enum Palette {
     public static let white = UIColor(hex: "#FFFFFFFF")
     public static let black = UIColor(hex: "#000000FF")
     public static let blue = UIColor(hex: "#1976D2FF")

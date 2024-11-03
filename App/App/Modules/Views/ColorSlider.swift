@@ -36,6 +36,10 @@ final class ColorSlider: UIView, ColorSliderInput {
   let color: UIColor
   weak var delegate: ColorSliderDelegate?
 
+  override var intrinsicContentSize: CGSize {
+    CGSize(width: super.intrinsicContentSize.width, height: Constants.knobSize)
+  }
+
   init(
     initialValue: CGFloat,
     color: UIColor
@@ -66,7 +70,7 @@ final class ColorSlider: UIView, ColorSliderInput {
   private func setupUI() {
     isUserInteractionEnabled = true
     layer.cornerRadius = Constants.knobSize / 2
-    gradientView.layer.borderColor = UIColor.gray.cgColor
+    gradientView.layer.borderColor = UIColor.black.cgColor
     gradientView.layer.borderWidth = UIScreen.onePixel
 
     addSubviews(gradientView, knobView)
@@ -100,7 +104,7 @@ final class ColorSlider: UIView, ColorSliderInput {
       let size = gradientView.bounds.size
       let diff = Constants.knobSize / 2 + (size.height - Constants.knobSize) / 2
 
-      let location = gestureRecognizer.location(in: self).offsetBy(
+      let location = gestureRecognizer.location(in: gradientView).offsetBy(
         dx: -size.width / 2 - Constants.knobSize / 2,
         dy: .zero
       )
@@ -115,7 +119,7 @@ final class ColorSlider: UIView, ColorSliderInput {
       )
       let value = (xOffset + size.width / 2 - diff) / (size.width - diff * 2)
       knobColorView.backgroundColor = color.withAlphaComponent(value)
-      delegate?.valueUpdate(value)
+      delegate?.valueUpdate(color: color, value)
     default:
       break
     }
@@ -143,5 +147,5 @@ extension ColorSlider: UIGestureRecognizerDelegate {
 }
 
 private enum Constants {
-  static let knobSize = 28.0
+  static let knobSize = 36.0
 }

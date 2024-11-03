@@ -6,7 +6,7 @@ import SnapKit
 import UIKit
 
 protocol ColorSliderDelegate: AnyObject {
-  func valueUpdate(_ value: CGFloat)
+  func valueUpdate(color: UIColor, _ value: CGFloat)
 }
 
 final class ColorSliderWithInput: UIView, ColorSliderDelegate {
@@ -19,6 +19,7 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
 
   private lazy var valueTextField = {
     let view = UITextField()
+    view.addDoneButtonToolbar()
     view.keyboardType = .decimalPad
     view.delegate = self
     view.textColor = Colors.foreground
@@ -36,6 +37,10 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
   private let colorSlider: ColorSlider
   private weak var delegate: ColorSliderDelegate?
 
+  override var intrinsicContentSize: CGSize {
+    colorSlider.intrinsicContentSize
+  }
+
   public init(
     delegate: ColorSliderDelegate,
     initialValue: CGFloat,
@@ -48,7 +53,7 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
     )
     super.init(frame: .zero)
     colorSlider.delegate = self
-    set(initialValue: initialValue)
+    set(value: initialValue)
     setupUI()
   }
 
@@ -85,8 +90,14 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
     }
   }
 
-  private func set(initialValue: CGFloat) {
-    valueTextField.text = String(Int(initialValue * 100))
+  func set(value: CGFloat) {
+    valueTextField.text = String(Int(value * 100))
+    colorSlider.updateValue(value)
+  }
+
+  func valueUpdate(color: UIColor, _ value: CGFloat) {
+    valueTextField.text = String(Int(value * 100))
+    delegate?.valueUpdate(color: color, value)
   }
 
   @objc
@@ -100,13 +111,7 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
       return
     }
     let number = min(100, max(0, value))
-    valueTextField.text = String(number)
-    colorSlider.updateValue(CGFloat(number) / 100)
-  }
-
-  func valueUpdate(_ value: CGFloat) {
-    valueTextField.text = String(Int(value * 100))
-    delegate?.valueUpdate(value)
+    set(value: CGFloat(number) / 100)
   }
 }
 

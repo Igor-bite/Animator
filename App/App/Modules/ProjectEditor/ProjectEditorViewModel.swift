@@ -92,7 +92,7 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   func didTapShapeSelector() {}
 
   func didTapColorSelector() {
-    view?.updateColorSelector()
+    view?.updateColorSelector(shouldClose: true)
   }
 }
 
@@ -123,10 +123,8 @@ extension ProjectEditorViewModel: LineWidthSelectorDelegate {
 }
 
 extension ProjectEditorViewModel: ColorSelectorViewDelegate {
-  func didRequestPallette() {}
-
-  func didSelect(color: UIColor) {
+  func didSelect(color: UIColor, shouldClose: Bool) {
     drawingConfig.color = color
-    view?.updateColorSelector()
+    view?.updateColorSelector(shouldClose: shouldClose)
   }
 }

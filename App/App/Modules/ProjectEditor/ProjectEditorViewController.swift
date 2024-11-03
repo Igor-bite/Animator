@@ -12,7 +12,7 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateLineWidthPreview()
   func updateLineWidthPreviewVisibility(isVisible: Bool)
   func updateLineWidthAlpha()
-  func updateColorSelector()
+  func updateColorSelector(shouldClose: Bool)
 }
 
 protocol ProjectEditorViewOutput: AnyObject,
@@ -71,11 +71,15 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
   private var lineWidthSelectorLeading: Constraint?
 
   private lazy var colorSelectorView = {
-    let view = ColorSelectorView()
+    let view = ColorSelectorView(
+      initialColor: viewModel.drawingConfig.color
+    )
     view.alpha = 0
     view.delegate = viewModel
     return view
   }()
+
+  private var isColorSelectorVisible = false
 
   private var bag = CancellableBag()
 
@@ -139,16 +143,19 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
     }
   }
 
-  func updateColorSelector() {
-    let isVisible = colorSelectorView.alpha == 1
-    bottomToolsView.updateColorSelector(isSelected: !isVisible)
+  func updateColorSelector(shouldClose: Bool) {
+    let isNowVisible = isColorSelectorVisible
+    let shouldBeVisible = !isNowVisible || (isNowVisible && !shouldClose)
+    isColorSelectorVisible = shouldBeVisible
+    bottomToolsView.updateColorSelector(isSelected: shouldBeVisible)
     bottomToolsView.updateColorSelector(color: viewModel.drawingConfig.color)
+
     UIView.animate(
       withDuration: 0.2,
       delay: .zero,
       options: .curveEaseInOut
     ) {
-      self.colorSelectorView.alpha = isVisible ? 0 : 1
+      self.colorSelectorView.alpha = shouldBeVisible ? 1 : 0
     }
   }
 
@@ -165,10 +172,14 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
         self.updateLineWidthAlpha()
         self.topToolsView.alpha = 1
         self.bottomToolsView.alpha = 1
+        self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
       case .drawingInProgress:
         self.lineWidthSelector.alpha = 0
         self.topToolsView.alpha = 0
         self.bottomToolsView.alpha = 0
+        if self.isColorSelectorVisible {
+          self.updateColorSelector(shouldClose: true)
+        }
       case .managingFrames:
         break
       case .playing:
@@ -232,9 +243,7 @@ final class ProjectEditorViewController: UIViewController, ProjectEditorViewInpu
 
     colorSelectorView.snp.makeConstraints { make in
       make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
-      make.height.equalTo(64)
-      make.leading.equalToSuperview().offset(60)
-      make.trailing.equalToSuperview().offset(-60)
+      make.centerX.equalToSuperview()
     }
   }
 }
