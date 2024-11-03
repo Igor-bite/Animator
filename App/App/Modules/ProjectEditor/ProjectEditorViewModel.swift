@@ -101,9 +101,7 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     drawingInteractor?.redo()
   }
 
-  func removeLayer() {
-    gifExporter.export(frames: frames, fps: 10)
-  }
+  func removeLayer() {}
 
   func addNewLayer() {
     saveLayer(needsReset: true)
@@ -124,6 +122,13 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 
   func openLayersView() {
     duplicateLayer()
+  }
+
+  func share() {
+    gifExporter.export(
+      frames: frames,
+      fps: playerConfig.fps
+    )
   }
 
   func pause() {

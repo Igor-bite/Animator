@@ -21,6 +21,8 @@ protocol TopToolsGroupOutput: AnyObject {
   func addNewLayer()
   func openLayersView()
 
+  func share()
+
   func pause()
   func play()
 }
@@ -42,6 +44,8 @@ final class TopToolsGroup: UIView {
     icon: Asset.forward.image
   )
 
+  private let redoUndoStack = UIStackView()
+
   private let removeLayerButton = TapIcon(
     size: .large(),
     icon: Asset.bin.image
@@ -57,15 +61,21 @@ final class TopToolsGroup: UIView {
     icon: Asset.layers.image
   )
 
-  private let pauseButton = TapIcon(
+  private let layerToolsStack = UIStackView()
+
+  private let playPauseButton = TapIcon(
     size: .large(),
-    icon: Asset.pause.image
+    icon: Asset.play.image,
+    selectionType: .icon(Asset.pause.image)
   )
 
-  private let playButton = TapIcon(
+  private let shareButton = TapIcon(
     size: .large(),
-    icon: Asset.play.image
+    icon: UIImage(systemName: "square.and.arrow.up") ?? UIImage()
   )
+
+  private let playPauseStack = UIStackView()
+  private let containerStack = UIStackView()
 
   init() {
     super.init(frame: .zero)
@@ -80,14 +90,12 @@ final class TopToolsGroup: UIView {
   }
 
   private func setupUI() {
-    let redoUndoStack = UIStackView()
     redoUndoStack.spacing = 16
     redoUndoStack.addArrangedSubviews([
       undoButton,
       redoButton,
     ])
 
-    let layerToolsStack = UIStackView()
     layerToolsStack.spacing = 16
     layerToolsStack.addArrangedSubviews([
       removeLayerButton,
@@ -95,14 +103,12 @@ final class TopToolsGroup: UIView {
       layersViewButton,
     ])
 
-    let playPauseStack = UIStackView()
     playPauseStack.spacing = 16
     playPauseStack.addArrangedSubviews([
-      pauseButton,
-      playButton,
+      playPauseButton,
+      shareButton,
     ])
 
-    let containerStack = UIStackView()
     containerStack.distribution = .equalSpacing
     containerStack.addArrangedSubviews([
       redoUndoStack,
@@ -132,11 +138,15 @@ final class TopToolsGroup: UIView {
     layersViewButton.addAction { [weak self] in
       self?.output?.openLayersView()
     }
-    pauseButton.addAction { [weak self] in
-      self?.output?.pause()
+    playPauseButton.addAction { [weak self] in
+      if self?.playPauseButton.isSelected == true {
+        self?.output?.play()
+      } else {
+        self?.output?.pause()
+      }
     }
-    playButton.addAction { [weak self] in
-      self?.output?.play()
+    shareButton.addAction { [weak self] in
+      self?.output?.share()
     }
   }
 
@@ -169,13 +179,21 @@ extension TopToolsGroup: StateDependentView {
   func stateDidUpdate(newState: ProjectEditorState) {
     switch newState {
     case .readyForDrawing:
-      alpha = 1
+      redoUndoStack.alpha = 1
+      layerToolsStack.alpha = 1
+      playPauseStack.alpha = 1
     case .drawingInProgress:
-      alpha = 0
+      redoUndoStack.alpha = 0
+      layerToolsStack.alpha = 0
+      playPauseStack.alpha = 0
     case .managingFrames:
-      alpha = 1
+      redoUndoStack.alpha = 0
+      layerToolsStack.alpha = 0
+      playPauseStack.alpha = 0
     case .playing:
-      alpha = 1
+      redoUndoStack.alpha = 0
+      layerToolsStack.alpha = 0
+      playPauseStack.alpha = 1
     }
   }
 }
