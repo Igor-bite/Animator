@@ -15,6 +15,7 @@ final class LayerPreviewCell: UICollectionViewCell {
     let view = UIView()
     view.backgroundColor = Colors.foreground
     view.smoothCornerRadius = 4
+    view.layer.borderColor = Colors.accent.cgColor
     return view
   }()
 
@@ -32,11 +33,22 @@ final class LayerPreviewCell: UICollectionViewCell {
     imageView.image = model.previewImage
   }
 
+  func setSelection(isSelected: Bool) {
+    UIView.animate(withDuration: 0.2) {
+      self.containerView.transform = isSelected ? CGAffineTransform(scaleX: 1.15, y: 1.15) : .identity
+      self.containerView.layer.borderWidth = isSelected ? 2 : 0
+    }
+  }
+
   override func prepareForReuse() {
     imageView.image = nil
+    setSelection(isSelected: false)
   }
 
   private func setupUI() {
+    clipsToBounds = false
+    containerView.clipsToBounds = false
+    contentView.clipsToBounds = false
     contentView.addSubview(containerView)
     containerView.addSubview(imageView)
 

@@ -14,7 +14,7 @@ struct LayerPreviewModel: Hashable {
   init(frame: FrameModel) {
     self.init(
       frameId: frame.uuid,
-      previewImage: frame.image ?? UIImage()
+      previewImage: frame.previewImage ?? frame.image ?? UIImage()
     )
   }
 }

@@ -20,7 +20,8 @@ protocol ProjectEditorViewOutput: AnyObject,
   TopToolsGroupOutput,
   BottomToolsGroupOutput,
   LineWidthSelectorDelegate,
-  ColorSelectorViewDelegate
+  ColorSelectorViewDelegate,
+  LayersPreviewDelegate
 {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
@@ -112,6 +113,7 @@ final class ProjectEditorViewController: UIViewController {
 
   private lazy var layersPreviewScrollView = {
     let view = LayersPreviewScrollView()
+    view.delegate = viewModel
     view.alpha = 0
     return view
   }()
@@ -172,6 +174,7 @@ final class ProjectEditorViewController: UIViewController {
           self.updateColorSelector(shouldClose: true)
         }
       case .managingFrames:
+        self.previousFrameImageView.alpha = 1
         self.lineWidthSelector.alpha = 0
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
@@ -319,6 +322,9 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
     isColorSelectorVisible = shouldBeVisible
     bottomToolsView.updateColorSelector(isSelected: shouldBeVisible)
     bottomToolsView.updateColorSelector(color: viewModel.drawingConfig.color)
+    if !shouldBeVisible {
+      colorSelectorView.colorSelectorDidClose()
+    }
 
     UIView.animate(
       withDuration: 0.2,

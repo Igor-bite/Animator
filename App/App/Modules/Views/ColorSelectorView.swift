@@ -137,6 +137,10 @@ final class ColorSelectorView: UIView {
     blueColorSlider.set(value: color.rgba.blue)
   }
 
+  func colorSelectorDidClose() {
+    isSliderColorInstalled = false
+  }
+
   private func setupKeyboardObserver() {
     Publishers.keyboardFrame.sink { [weak self] kFrame in
       guard let self else { return }

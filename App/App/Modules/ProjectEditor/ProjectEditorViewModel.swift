@@ -113,7 +113,15 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 
   private func saveLayer(needsReset: Bool) {
     let frameImage = drawingInteractor?.produceCurrentSketchImage()
-    frames.append(FrameModel(image: frameImage))
+    frames.append(
+      FrameModel(
+        image: frameImage,
+        previewSize: CGSize(
+          width: 32,
+          height: 32 * drawingAreaSize.height / drawingAreaSize.width
+        )
+      )
+    )
     view?.updatePreviousFrame(with: frameImage)
     if needsReset {
       drawingInteractor?.resetForNewSketch()
@@ -197,5 +205,14 @@ extension ProjectEditorViewModel: ColorSelectorViewDelegate {
   func didSelect(color: UIColor, shouldClose: Bool) {
     drawingConfig.color = color
     view?.updateColorSelector(shouldClose: shouldClose)
+  }
+}
+
+extension ProjectEditorViewModel: LayersPreviewDelegate {
+  func didSelectFrame(at index: Int) {
+    guard let frameImage = frames[safe: index] else { return }
+    frames[safe: index - 1]?.prefetchImage()
+    frames[safe: index + 1]?.prefetchImage()
+    view?.updatePreviousFrame(with: frameImage.image)
   }
 }

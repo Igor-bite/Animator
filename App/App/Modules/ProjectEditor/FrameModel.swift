@@ -7,6 +7,7 @@ final class FrameModel {
 
   private var _image: UIImage?
   private let path: String?
+  private let previewSize: CGSize
   private var saveToDiskWorkitem: DispatchWorkItem?
 
   let uuid: UUID
@@ -23,7 +24,10 @@ final class FrameModel {
     }
   }
 
-  init(image: UIImage?) {
+  var previewImage: UIImage?
+
+  init(image: UIImage?, previewSize: CGSize) {
+    self.previewSize = previewSize
     uuid = UUID()
     _image = image
 
@@ -33,6 +37,7 @@ final class FrameModel {
     }
     let path = NSTemporaryDirectory() + "/drawing_\(uuid.hashValue).frame"
     self.path = path
+    renderPreview(for: image)
     scheduleSavingToDisk(image: image)
   }
 
@@ -66,5 +71,31 @@ final class FrameModel {
     }
     saveToDiskWorkitem = workItem
     FrameModel.queue.asyncAfter(deadline: .now() + 5, execute: workItem)
+  }
+
+  private func renderPreview(for image: UIImage) {
+    FrameModel.queue.async {
+      guard let image = image.cgImage else { return }
+      let format = UIGraphicsImageRendererFormat()
+      format.scale = UIScreen.main.scale
+      format.preferredRange = .standard
+      format.opaque = false
+      let imageSize = self.previewSize
+      let renderer = UIGraphicsImageRenderer(
+        size: imageSize,
+        format: format
+      )
+      let rect = CGRect(origin: .zero, size: imageSize)
+      let previewImage = renderer.image { ctx in
+        ctx.cgContext.translateBy(x: imageSize.width / 2.0, y: imageSize.height / 2.0)
+        ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
+        ctx.cgContext.translateBy(x: -imageSize.width / 2.0, y: -imageSize.height / 2.0)
+        ctx.cgContext.translateBy(x: rect.minX, y: imageSize.height - rect.maxY)
+        ctx.cgContext.draw(image, in: rect)
+      }
+      DispatchQueue.main.async {
+        self.previewImage = previewImage
+      }
+    }
   }
 }
