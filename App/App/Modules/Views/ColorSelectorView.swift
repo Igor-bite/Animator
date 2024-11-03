@@ -27,14 +27,16 @@ final class ColorSelectorView: UIView {
     return blurView
   }()
 
-  private let mainColors = [
+  private var recentColors = [
     Colors.Palette.white,
-    Colors.Palette.red,
     Colors.Palette.black,
-    Colors.Palette.blue,
     Colors.Palette.gray,
-    UIColor.green,
+    Colors.Palette.red,
+    Colors.accent,
+    Colors.Palette.blue,
   ]
+
+  private let indexToRemove = 2
 
   private let recentColorsContainerStack = {
     let view = UIStackView()
@@ -43,6 +45,8 @@ final class ColorSelectorView: UIView {
     view.distribution = .equalSpacing
     return view
   }()
+
+  private var colorIcons = [TapIcon]()
 
   private lazy var palleteIcon = {
     let view = TapIcon(
@@ -83,7 +87,7 @@ final class ColorSelectorView: UIView {
 
   private var isColorSlidersVisible = false
   private var bag = CancellableBag()
-  private var initialFrame: CGRect = .zero
+  private var isSliderColorInstalled: Bool = false
 
   private var customColor: UIColor
 
@@ -181,7 +185,7 @@ final class ColorSelectorView: UIView {
 
   private func setupRecentColorsStack() {
     recentColorsContainerStack.addArrangedSubview(palleteIcon)
-    for color in mainColors {
+    for color in recentColors {
       let image = ShapeImageGenerator.circleImage(color: color, size: .size32)
       let icon = TapIcon(
         size: .large(),
@@ -189,10 +193,13 @@ final class ColorSelectorView: UIView {
         selectionType: .icon(image),
         renderingMode: .alwaysOriginal
       )
+      colorIcons.append(icon)
       recentColorsContainerStack.addArrangedSubview(icon)
       icon.addAction { [weak self] in
-        self?.updateColor(color: color)
-        self?.delegate?.didSelect(color: color, shouldClose: true)
+        guard let self else { return }
+        updateColor(color: color)
+        delegate?.didSelect(color: color, shouldClose: true)
+        pushNewColorToRecents(color: color, fromSlider: false)
       }
     }
   }
@@ -214,10 +221,69 @@ final class ColorSelectorView: UIView {
       } else {
         colorSlidersBlurView.alpha = 1
         colorSlidersBlurView.transform = .identity
-        colorSlidersContainerStack.alpha = 1
         colorSlidersContainerStack.transform = .identity
         recentColorsBlurView.roundCorners([.bottomLeft, .bottomRight], radius: 12)
       }
+    }
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: 0.1,
+      options: .curveEaseInOut
+    ) { [weak self] in
+      guard let self else { return }
+
+      if isColorSlidersVisible {
+        colorSlidersContainerStack.alpha = 1
+      }
+    }
+  }
+
+  private func pushNewColorToRecents(color: UIColor, fromSlider: Bool) {
+    if fromSlider {
+      if !isSliderColorInstalled {
+        recentColors.remove(at: indexToRemove)
+        recentColors.insert(color, at: .zero)
+        isSliderColorInstalled = true
+      } else {
+        recentColors[0] = color
+      }
+    } else {
+      var indexToRemove = indexToRemove
+      if let index = recentColors.firstIndex(where: { $0 == color }) {
+        guard index <= indexToRemove, index != 0 else { return }
+        indexToRemove = index
+      }
+      recentColors.remove(at: indexToRemove)
+      recentColors.insert(color, at: .zero)
+      isSliderColorInstalled = false
+    }
+    updateRecentColorsStack()
+  }
+
+  private func updateRecentColorsStack() {
+    for i in 0 ..< colorIcons.count {
+      updateColorIcon(at: i)
+    }
+  }
+
+  private func updateColorIcon(at index: Int) {
+    guard let color = recentColors[safe: index],
+          let icon = colorIcons[safe: index]
+    else {
+      assertionFailure()
+      return
+    }
+    let image = ShapeImageGenerator.circleImage(color: color, size: .size32)
+    icon.configure(
+      icon: image,
+      selectionType: .icon(image)
+    )
+    icon.addAction { [weak self] in
+      guard let self else { return }
+      updateColor(color: color)
+      delegate?.didSelect(color: color, shouldClose: true)
+      pushNewColorToRecents(color: color, fromSlider: false)
     }
   }
 
@@ -245,6 +311,7 @@ extension ColorSelectorView: ColorSliderDelegate {
       assertionFailure()
     }
     customColor = newColor.uiColor
+    pushNewColorToRecents(color: customColor, fromSlider: true)
     delegate?.didSelect(color: customColor, shouldClose: false)
   }
 }
