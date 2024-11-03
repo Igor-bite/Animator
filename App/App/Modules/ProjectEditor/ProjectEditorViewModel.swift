@@ -31,9 +31,6 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
     )
   }()
 
-  private var accumulationImage: UIImage?
-  private var isAccumulationEnabled: Bool = false
-
   weak var view: ProjectEditorViewInput?
 
   var state = CurrentValueSubject<ProjectEditorState, Never>(.readyForDrawing)
@@ -90,62 +87,21 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   func removeLayer() {}
 
   func addNewLayer() {
-    var frameImage = drawingInteractor?.produceCurrentSketchImage()
-
-    if isAccumulationEnabled,
-       let accumulationImage
-    {
-      let rect = CGRect(origin: .zero, size: drawingAreaSize)
-      frameImage = imageRenderer.image { ctx in
-        ctx.cgContext.clear(CGRect(origin: .zero, size: drawingAreaSize))
-        guard let image = frameImage?.cgImage,
-              let accumulationImage = accumulationImage.cgImage
-        else { return }
-
-        ctx.cgContext.translateBy(x: drawingAreaSize.width / 2.0, y: drawingAreaSize.height / 2.0)
-        ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
-        ctx.cgContext.translateBy(x: -drawingAreaSize.width / 2.0, y: -drawingAreaSize.height / 2.0)
-        ctx.cgContext.translateBy(x: rect.minX, y: drawingAreaSize.height - rect.maxY)
-
-        ctx.cgContext.draw(accumulationImage, in: CGRect(origin: .zero, size: rect.size))
-        ctx.cgContext.draw(image, in: CGRect(origin: .zero, size: rect.size))
-      }
-    }
-    accumulationImage = frameImage
-    let frame = FrameModel(image: frameImage)
-    frames.append(frame)
-    currentFrameIndex += 1
-    view?.updatePreviousFrame(with: frameImage)
-    drawingInteractor?.resetForNewSketch()
+    saveLayer(needsReset: true)
   }
 
   func duplicateLayer() {
-    var frameImage = drawingInteractor?.produceCurrentSketchImage()
+    saveLayer(needsReset: false)
+  }
 
-    if isAccumulationEnabled,
-       let accumulationImage
-    {
-      let rect = CGRect(origin: .zero, size: drawingAreaSize)
-      frameImage = imageRenderer.image { ctx in
-        ctx.cgContext.clear(CGRect(origin: .zero, size: drawingAreaSize))
-        guard let image = frameImage?.cgImage,
-              let accumulationImage = accumulationImage.cgImage
-        else { return }
-
-        ctx.cgContext.translateBy(x: drawingAreaSize.width / 2.0, y: drawingAreaSize.height / 2.0)
-        ctx.cgContext.scaleBy(x: 1.0, y: -1.0)
-        ctx.cgContext.translateBy(x: -drawingAreaSize.width / 2.0, y: -drawingAreaSize.height / 2.0)
-        ctx.cgContext.translateBy(x: rect.minX, y: drawingAreaSize.height - rect.maxY)
-
-        ctx.cgContext.draw(accumulationImage, in: CGRect(origin: .zero, size: rect.size))
-        ctx.cgContext.draw(image, in: CGRect(origin: .zero, size: rect.size))
-      }
-    }
-    accumulationImage = frameImage
-    let frame = FrameModel(image: frameImage)
-    frames.append(frame)
+  private func saveLayer(needsReset: Bool) {
+    let frameImage = drawingInteractor?.produceCurrentSketchImage()
+    frames.append(FrameModel(image: frameImage))
     currentFrameIndex += 1
     view?.updatePreviousFrame(with: frameImage)
+    if needsReset {
+      drawingInteractor?.resetForNewSketch()
+    }
   }
 
   func openLayersView() {
