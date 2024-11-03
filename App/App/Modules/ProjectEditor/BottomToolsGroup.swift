@@ -129,6 +129,24 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
       make.trailing.top.bottom.equalToSuperview()
       make.leading.equalTo(shapeSelectorButton.snp.trailing).offset(spacing)
     }
+
+    colorSelectorButton.layer.shadowColor = Colors.foreground.cgColor
+    colorSelectorButton.layer.shadowRadius = 5
+    colorSelectorButton.layer.shadowOffset = .init(squareDimension: 0)
+    colorSelectorButton.layer.shadowOpacity = 0.4
+  }
+
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    guard previousTraitCollection?.hasDifferentColorAppearance(comparedTo: traitCollection) == true else { return }
+    colorSelectorButton.layer.shadowColor = Colors.foreground.cgColor
+    switch traitCollection.userInterfaceStyle {
+    case .light, .unspecified:
+      colorSelectorButton.layer.shadowOpacity = 0.3
+    case .dark:
+      colorSelectorButton.layer.shadowOpacity = 0.4
+    @unknown default:
+      colorSelectorButton.layer.shadowOpacity = 0.3
+    }
   }
 
   private func setupActions() {

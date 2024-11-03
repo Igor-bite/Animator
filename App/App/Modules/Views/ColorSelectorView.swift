@@ -85,6 +85,16 @@ final class ColorSelectorView: UIView {
     return view
   }()
 
+  private let separatorView = {
+    let separatorView = UIView()
+    separatorView.backgroundColor = .black
+    separatorView.snp.makeConstraints { make in
+      make.width.equalTo(UIScreen.onePixel)
+      make.height.equalTo(32)
+    }
+    return separatorView
+  }()
+
   private var isColorSlidersVisible = false
   private var bag = CancellableBag()
   private var isSliderColorInstalled: Bool = false
@@ -185,7 +195,7 @@ final class ColorSelectorView: UIView {
 
   private func setupRecentColorsStack() {
     recentColorsContainerStack.addArrangedSubview(palleteIcon)
-    for color in recentColors {
+    for (i, color) in recentColors.enumerated() {
       let image = ShapeImageGenerator.circleImage(color: color, size: .size32)
       let icon = TapIcon(
         size: .large(),
@@ -195,6 +205,9 @@ final class ColorSelectorView: UIView {
       )
       colorIcons.append(icon)
       recentColorsContainerStack.addArrangedSubview(icon)
+      if i == indexToRemove {
+        recentColorsContainerStack.addArrangedSubview(separatorView)
+      }
       icon.addAction { [weak self] in
         guard let self else { return }
         updateColor(color: color)
@@ -202,6 +215,8 @@ final class ColorSelectorView: UIView {
         pushNewColorToRecents(color: color, fromSlider: false)
       }
     }
+    recentColorsContainerStack.setCustomSpacing(8, after: colorIcons[indexToRemove])
+    recentColorsContainerStack.setCustomSpacing(8, after: separatorView)
   }
 
   private func updatePalletteVisibility() {
