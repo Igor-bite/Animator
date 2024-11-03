@@ -11,6 +11,7 @@ protocol FramesPlayerInteractor {
   func configure(with frames: [FrameModel])
   func start()
   func stop()
+  func didUpdateConfig(_ config: FramesPlayerConfig)
 }
 
 final class FramesPlayerController {
@@ -23,6 +24,7 @@ final class FramesPlayerController {
 
   private var frames = [FrameModel]()
   private var currentFrameIndex = 0
+  private var isPlaying = false
   private lazy var displayLink = makeDisplayLink()
 
   weak var view: FramesPlayerViewInput?
@@ -43,7 +45,9 @@ final class FramesPlayerController {
 
   private func makeDisplayLink() -> CADisplayLinkProxy {
     let dl = CADisplayLinkProxy(fps: config.fps)
-    dl.pause()
+    if !isPlaying {
+      dl.pause()
+    }
     return dl
   }
 
@@ -76,11 +80,17 @@ extension FramesPlayerController: FramesPlayerInteractor {
     updateFrame()
   }
 
+  func didUpdateConfig(_ config: FramesPlayerConfig) {
+    self.config = config
+  }
+
   func start() {
+    isPlaying = true
     displayLink.resume()
   }
 
   func stop() {
+    isPlaying = false
     displayLink.pause()
     currentFrameIndex = 0
     updateFrame()

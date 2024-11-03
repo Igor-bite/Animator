@@ -25,6 +25,7 @@ protocol ProjectEditorViewOutput: AnyObject,
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
   var drawingInteractor: DrawingViewInteractor? { get set }
+  var playerConfig: FramesPlayerConfig { get }
   var playerInteractor: FramesPlayerInteractor? { get set }
   var drawingAreaSize: CGSize { get set }
 }
@@ -49,7 +50,7 @@ final class ProjectEditorViewController: UIViewController {
 
   private lazy var framesPlayerView = {
     let (view, interactor) = FramesPlayerAssembly.make(
-      with: FramesPlayerConfig(fps: 10)
+      with: viewModel.playerConfig
     )
     viewModel.playerInteractor = interactor
     view.smoothCornerRadius = Constants.drawingViewCornerRadius

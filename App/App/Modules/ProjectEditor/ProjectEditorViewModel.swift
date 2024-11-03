@@ -29,6 +29,7 @@ enum ProjectEditorState {
 
 final class ProjectEditorViewModel: ProjectEditorViewOutput {
   private let coordinator: ProjectEditorCoordinating
+  private let gifExporter = GIFExporter()
   private var frames = [FrameModel]()
   private lazy var imageRenderer: UIGraphicsImageRenderer = {
     let format = UIGraphicsImageRendererFormat()
@@ -47,6 +48,12 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
   var drawingConfig: DrawingViewConfiguration {
     didSet {
       updateDrawingViewConfig()
+    }
+  }
+
+  var playerConfig: FramesPlayerConfig {
+    didSet {
+      updatePlayerViewConfig()
     }
   }
 
@@ -70,12 +77,17 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
       lineWidth: 20,
       color: Colors.Palette.blue
     )
+    playerConfig = FramesPlayerConfig(fps: 10)
   }
 
   private func updateDrawingViewConfig() {
     drawingInteractor?.didUpdateConfig(
       config: drawingConfig
     )
+  }
+
+  private func updatePlayerViewConfig() {
+    playerInteractor?.didUpdateConfig(playerConfig)
   }
 }
 
@@ -96,7 +108,9 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     drawingInteractor?.redo()
   }
 
-  func removeLayer() {}
+  func removeLayer() {
+    gifExporter.export(frames: frames, fps: 10)
+  }
 
   func addNewLayer() {
     saveLayer(needsReset: true)
