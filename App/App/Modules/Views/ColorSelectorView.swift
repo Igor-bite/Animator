@@ -42,7 +42,7 @@ final class ColorSelectorView: UIView {
     let view = UIStackView()
     view.axis = .horizontal
     view.spacing = 16
-    view.distribution = .equalSpacing
+    view.distribution = .fill
     return view
   }()
 
