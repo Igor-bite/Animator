@@ -1,5 +1,6 @@
 // Created by Igor Klyuzhev in 2024
 
+import Combine
 import IKDrawing
 import IKUI
 import IKUtils
@@ -17,6 +18,7 @@ protocol BottomToolsGroupOutput: AnyObject {
   func didSelect(tool: DrawingTool)
   func didTapShapeSelector()
   func didTapColorSelector()
+  func didSelectFPS(_ newValue: Int)
 }
 
 struct BottomToolsGroupModel {
@@ -64,13 +66,35 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
     renderingMode: .alwaysOriginal
   )
 
+  private let drawingContainerView = UIView()
+
+  private lazy var fpsSlider = {
+    let max = 30.0
+    let min = 1.0
+    let initial = 10.0
+    let view = ColorSliderWithInput(
+      delegate: self,
+      initialValue: initial / max,
+      fromColor: Colors.foreground,
+      toColor: Colors.accent,
+      inputPostfix: "FPS",
+      multiplier: max,
+      minValue: Int(min),
+      maxValue: Int(max)
+    )
+    view.alpha = 0
+    return view
+  }()
+
   private let model: BottomToolsGroupModel
+  private var bag = CancellableBag()
 
   init(model: BottomToolsGroupModel) {
     self.model = model
     super.init(frame: .zero)
     setupUI()
     setupActions()
+    setupKeyboardObserver()
   }
 
   @available(*, unavailable)
@@ -101,17 +125,47 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
     shapeSelectorButton.isSelected = isSelected
   }
 
+  private func setupKeyboardObserver() {
+    Publishers.keyboardFrame.sink { [weak self] kFrame in
+      guard let self else { return }
+
+      let isKeyboardVisible = kFrame.height > 0
+      if isKeyboardVisible,
+         transform == .identity
+      {
+        guard let window = UIWindow.keyWindow,
+              let frame = fpsSlider.frame(in: window),
+              transform == .identity
+        else { return }
+
+        let diff = max(0, frame.maxY - kFrame.minY)
+        transform = CGAffineTransform(translationX: .zero, y: -diff)
+      } else if !isKeyboardVisible {
+        transform = .identity
+      }
+    }.store(in: bag)
+  }
+
   private func setupUI() {
-    let spacing = 16
-    let containerView = UIView()
-    containerView.addSubviews(
+    snp.makeConstraints { make in
+      make.height.equalTo(36)
+    }
+
+    addSubviews(drawingContainerView, fpsSlider)
+
+    fpsSlider.snp.makeConstraints { make in
+      make.leading.equalToSuperview().offset(32)
+      make.trailing.equalToSuperview().offset(-32)
+    }
+
+    drawingContainerView.addSubviews(
       drawingToolsButtons,
       shapeSelectorButton,
       colorSelectorButton
     )
 
-    addSubview(containerView)
-    containerView.snp.makeConstraints { make in
+    let spacing = 16
+    drawingContainerView.snp.makeConstraints { make in
       make.top.bottom.equalToSuperview()
       make.centerX.equalToSuperview()
     }
@@ -164,5 +218,30 @@ extension BottomToolsGroup: SelectableIconsGroupDelegate {
   func didSelect(icon: SelectableIconsGroupModel.IconModel) {
     guard let tool = DrawingTool(rawValue: icon.id) else { return }
     output?.didSelect(tool: tool)
+  }
+}
+
+extension BottomToolsGroup: ColorSliderDelegate {
+  func valueUpdate(color: UIColor, _ value: CGFloat) {
+    output?.didSelectFPS(Int(value * 30))
+  }
+}
+
+extension BottomToolsGroup: StateDependentView {
+  func stateDidUpdate(newState: ProjectEditorState) {
+    switch newState {
+    case .readyForDrawing:
+      drawingContainerView.alpha = 1
+      fpsSlider.alpha = 0
+    case .drawingInProgress:
+      drawingContainerView.alpha = 0
+      fpsSlider.alpha = 0
+    case .managingFrames:
+      drawingContainerView.alpha = 0
+      fpsSlider.alpha = 0
+    case .playing:
+      drawingContainerView.alpha = 0
+      fpsSlider.alpha = 1
+    }
   }
 }

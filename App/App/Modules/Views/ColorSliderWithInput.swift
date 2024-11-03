@@ -28,12 +28,16 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
     view.rightViewMode = .always
     view.addTarget(self, action: #selector(textFieldDidChangeValue), for: .editingChanged)
     let rightView = UILabel()
-    rightView.text = "%"
+    rightView.text = inputPostfix
     rightView.font = .boldSystemFont(ofSize: 16)
     view.rightView = rightView
     return view
   }()
 
+  private let minValue: Int
+  private let maxValue: Int
+  private let inputPostfix: String
+  private let multiplier: CGFloat
   private let colorSlider: ColorSlider
   private weak var delegate: ColorSliderDelegate?
 
@@ -44,12 +48,22 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
   public init(
     delegate: ColorSliderDelegate,
     initialValue: CGFloat,
-    color: UIColor
+    fromColor: UIColor,
+    toColor: UIColor,
+    inputPostfix: String,
+    multiplier: CGFloat = 100,
+    minValue: Int = 0,
+    maxValue: Int = 100
   ) {
+    self.minValue = minValue
+    self.maxValue = maxValue
+    self.multiplier = multiplier
+    self.inputPostfix = inputPostfix
     self.delegate = delegate
     colorSlider = ColorSlider(
       initialValue: initialValue,
-      color: color
+      fromColor: fromColor,
+      toColor: toColor
     )
     super.init(frame: .zero)
     colorSlider.delegate = self
@@ -66,7 +80,7 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
     guard let text = valueTextField.text,
           let num = Int(text)
     else { return }
-    colorSlider.updateValue(CGFloat(num) / 100)
+    set(value: CGFloat(num) / multiplier)
   }
 
   private func setupUI() {
@@ -81,7 +95,7 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
     textFieldContainer.snp.makeConstraints { make in
       make.trailing.equalToSuperview()
       make.top.bottom.equalToSuperview()
-      make.width.equalTo(56)
+      make.width.equalTo(52 + inputPostfix.count * 4)
     }
 
     valueTextField.snp.makeConstraints { make in
@@ -91,12 +105,19 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
   }
 
   func set(value: CGFloat) {
-    valueTextField.text = String(Int(value * 100))
-    colorSlider.updateValue(value)
+    let clamped = clamp(Int(value * multiplier), min: minValue, max: maxValue)
+    valueTextField.text = String(clamped)
+    if clamped == minValue {
+      colorSlider.updateValue(0)
+    } else if clamped == maxValue {
+      colorSlider.updateValue(1)
+    } else {
+      colorSlider.updateValue(value)
+    }
   }
 
   func valueUpdate(color: UIColor, _ value: CGFloat) {
-    valueTextField.text = String(Int(value * 100))
+    valueTextField.text = String(clamp(Int(value * multiplier), min: minValue, max: maxValue))
     delegate?.valueUpdate(color: color, value)
   }
 
@@ -110,8 +131,8 @@ final class ColorSliderWithInput: UIView, ColorSliderDelegate {
       assertionFailure()
       return
     }
-    let number = min(100, max(0, value))
-    set(value: CGFloat(number) / 100)
+    let number = min(maxValue, max(minValue, value))
+    set(value: CGFloat(number) / multiplier)
   }
 }
 

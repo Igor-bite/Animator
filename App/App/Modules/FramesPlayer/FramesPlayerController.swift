@@ -4,7 +4,7 @@ import IKUtils
 import UIKit
 
 struct FramesPlayerConfig: Hashable {
-  let fps: Int
+  var fps: Int
 }
 
 protocol FramesPlayerInteractor {
@@ -18,6 +18,7 @@ final class FramesPlayerController {
   private var config: FramesPlayerConfig {
     didSet {
       guard config != oldValue else { return }
+      displayLink.invalidate()
       displayLink = makeDisplayLink()
     }
   }
@@ -33,6 +34,13 @@ final class FramesPlayerController {
     config: FramesPlayerConfig
   ) {
     self.config = config
+  }
+
+  private func makeDisplayLink() -> CADisplayLinkProxy {
+    let displayLink = CADisplayLinkProxy(fps: config.fps)
+    if !isPlaying {
+      displayLink.pause()
+    }
     displayLink.handler = { [weak self] in
       guard let self else { return }
       currentFrameIndex += 1
@@ -41,14 +49,7 @@ final class FramesPlayerController {
       }
       updateFrame()
     }
-  }
-
-  private func makeDisplayLink() -> CADisplayLinkProxy {
-    let dl = CADisplayLinkProxy(fps: config.fps)
-    if !isPlaying {
-      dl.pause()
-    }
-    return dl
+    return displayLink
   }
 
   private func updateFrame() {

@@ -30,6 +30,10 @@ protocol ProjectEditorViewOutput: AnyObject,
   var drawingAreaSize: CGSize { get set }
 }
 
+protocol StateDependentView {
+  func stateDidUpdate(newState: ProjectEditorState)
+}
+
 final class ProjectEditorViewController: UIViewController {
   private let viewModel: ProjectEditorViewOutput
   private lazy var topToolsView = {
@@ -136,31 +140,21 @@ final class ProjectEditorViewController: UIViewController {
 
   private func handleStateUpdate(to state: ProjectEditorState) {
     let action = {
+      self.topToolsView.stateDidUpdate(newState: state)
+      self.bottomToolsView.stateDidUpdate(newState: state)
+
       switch state {
       case .readyForDrawing:
         UIView.performWithoutAnimation {
-          self.framesPlayerView.isHidden = true
           self.framesPlayerView.alpha = 0
         }
         self.updateLineWidthAlpha()
-        self.topToolsView.alpha = 1
-        self.topToolsView.isHidden = false
-        self.bottomToolsView.alpha = 1
-        self.bottomToolsView.isHidden = false
         self.previousFrameImageView.alpha = 0.5
-        self.previousFrameImageView.isHidden = false
         self.drawingView.alpha = 1
-        self.drawingView.isHidden = false
         self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
       case .drawingInProgress:
         self.lineWidthSelector.alpha = 0
-        self.lineWidthSelector.isHidden = true
-        self.topToolsView.alpha = 0
-        self.topToolsView.isHidden = true
-        self.bottomToolsView.alpha = 0
-        self.bottomToolsView.isHidden = true
         self.previousFrameImageView.alpha = 0.5
-        self.previousFrameImageView.isHidden = false
 
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
@@ -169,17 +163,11 @@ final class ProjectEditorViewController: UIViewController {
         break
       case .playing:
         UIView.performWithoutAnimation {
-          self.framesPlayerView.isHidden = false
           self.framesPlayerView.alpha = 1
         }
         self.lineWidthSelector.alpha = 0
-        self.lineWidthSelector.isHidden = true
         self.previousFrameImageView.alpha = 0
-        self.previousFrameImageView.isHidden = true
-        self.bottomToolsView.alpha = 0
-        self.bottomToolsView.isHidden = true
         self.drawingView.alpha = 0
-        self.drawingView.isHidden = true
 
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
@@ -287,7 +275,6 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
   func updateLineWidthAlpha() {
     let action = {
       self.lineWidthSelector.alpha = self.viewModel.drawingConfig.canDraw ? 1 : 0
-      self.lineWidthSelector.isHidden = self.viewModel.drawingConfig.canDraw ? false : true
     }
 
     if UIView.inheritedAnimationDuration > 0 {
@@ -317,7 +304,6 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
       options: .curveEaseInOut
     ) {
       self.colorSelectorView.alpha = shouldBeVisible ? 1 : 0
-      self.colorSelectorView.isHidden = shouldBeVisible ? false : true
     }
   }
 

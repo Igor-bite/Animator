@@ -3,6 +3,9 @@
 import UIKit
 
 public class GradientView: UIView {
+  private var colors: [UIColor]
+  private var locations: [Float]?
+
   override public class var layerClass: Swift.AnyClass {
     CAGradientLayer.self
   }
@@ -13,6 +16,8 @@ public class GradientView: UIView {
     colors: [UIColor],
     locations: [Float]? = nil
   ) {
+    self.colors = colors
+    self.locations = locations
     super.init(frame: frame)
 
     guard let gradientLayer = layer as? CAGradientLayer else {
@@ -53,6 +58,14 @@ public class GradientView: UIView {
     if let colorLocations = colorLocations {
       gradientLayer.locations = colorLocations.map { NSNumber(value: $0) }
     }
+  }
+
+  override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    guard previousTraitCollection?.hasDifferentColorAppearance(comparedTo: traitCollection) == true else { return }
+    updateGradientColors(
+      colors,
+      colorLocations: locations
+    )
   }
 }
 

@@ -16,14 +16,7 @@ enum ProjectEditorState {
   case playing
 
   var needsAnimatedChange: Bool {
-    switch self {
-    case .readyForDrawing,
-         .drawingInProgress,
-         .managingFrames:
-      true
-    case .playing:
-      false
-    }
+    true
   }
 }
 
@@ -158,6 +151,10 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
 
   func didTapColorSelector() {
     view?.updateColorSelector(shouldClose: true)
+  }
+
+  func didSelectFPS(_ newValue: Int) {
+    playerConfig.fps = max(1, min(30, newValue))
   }
 }
 

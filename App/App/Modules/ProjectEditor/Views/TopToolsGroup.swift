@@ -164,3 +164,18 @@ extension TopToolsGroup: TopToolsGroupInput {
     updateButtons()
   }
 }
+
+extension TopToolsGroup: StateDependentView {
+  func stateDidUpdate(newState: ProjectEditorState) {
+    switch newState {
+    case .readyForDrawing:
+      alpha = 1
+    case .drawingInProgress:
+      alpha = 0
+    case .managingFrames:
+      alpha = 1
+    case .playing:
+      alpha = 1
+    }
+  }
+}

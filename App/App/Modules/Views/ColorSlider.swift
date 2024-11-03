@@ -13,7 +13,7 @@ final class ColorSlider: UIView, ColorSliderInput {
   private lazy var gradientView = {
     let view = GradientView(
       direction: .horizontal(.zero, 1),
-      colors: [.clear, color]
+      colors: [fromColor, toColor]
     )
     view.layer.cornerRadius = Constants.knobSize / 2
     return view
@@ -29,11 +29,12 @@ final class ColorSlider: UIView, ColorSliderInput {
   private lazy var knobColorView = {
     let view = UIView()
     view.layer.cornerRadius = (Constants.knobSize - 6) / 2
-    view.backgroundColor = color
+    view.backgroundColor = toColor
     return view
   }()
 
-  let color: UIColor
+  let fromColor: UIColor
+  let toColor: UIColor
   weak var delegate: ColorSliderDelegate?
 
   override var intrinsicContentSize: CGSize {
@@ -42,9 +43,11 @@ final class ColorSlider: UIView, ColorSliderInput {
 
   init(
     initialValue: CGFloat,
-    color: UIColor
+    fromColor: UIColor,
+    toColor: UIColor
   ) {
-    self.color = color
+    self.fromColor = fromColor
+    self.toColor = toColor
     super.init(frame: .zero)
     updateValue(initialValue)
     setupUI()
@@ -61,6 +64,7 @@ final class ColorSlider: UIView, ColorSliderInput {
     let diff = Constants.knobSize / 2 + (size.height - Constants.knobSize) / 2
 
     let xOffset = value * (size.width - diff * 2) - size.width / 2 + diff
+    knobColorView.backgroundColor = toColor.withAlphaComponent(value)
     knobView.transform = CGAffineTransform(
       translationX: xOffset,
       y: .zero
@@ -105,7 +109,7 @@ final class ColorSlider: UIView, ColorSliderInput {
       let diff = Constants.knobSize / 2 + (size.height - Constants.knobSize) / 2
 
       let location = gestureRecognizer.location(in: gradientView).offsetBy(
-        dx: -size.width / 2 - Constants.knobSize / 2,
+        dx: -size.width / 2,
         dy: .zero
       )
       let xOffset = clamp(
@@ -118,8 +122,8 @@ final class ColorSlider: UIView, ColorSliderInput {
         y: .zero
       )
       let value = (xOffset + size.width / 2 - diff) / (size.width - diff * 2)
-      knobColorView.backgroundColor = color.withAlphaComponent(value)
-      delegate?.valueUpdate(color: color, value)
+      knobColorView.backgroundColor = toColor.withAlphaComponent(value)
+      delegate?.valueUpdate(color: toColor, value)
     default:
       break
     }

@@ -19,6 +19,13 @@ final class DrawingTopLayer: CALayer {
     super.init()
   }
 
+  override init(layer: Any) {
+    lineWidth = 20
+    strokeColor = UIColor.black
+    isEraser = false
+    super.init(layer: layer)
+  }
+
   @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")

@@ -64,17 +64,23 @@ final class ColorSelectorView: UIView {
   private lazy var redColorSlider = ColorSliderWithInput(
     delegate: self,
     initialValue: customColor.rgba.red,
-    color: .red
+    fromColor: .clear,
+    toColor: .red,
+    inputPostfix: "%"
   )
   private lazy var greenColorSlider = ColorSliderWithInput(
     delegate: self,
     initialValue: customColor.rgba.green,
-    color: .green
+    fromColor: .clear,
+    toColor: .green,
+    inputPostfix: "%"
   )
   private lazy var blueColorSlider = ColorSliderWithInput(
     delegate: self,
     initialValue: customColor.rgba.blue,
-    color: .blue
+    fromColor: .clear,
+    toColor: .blue,
+    inputPostfix: "%"
   )
 
   private let colorSlidersContainerStack = {
