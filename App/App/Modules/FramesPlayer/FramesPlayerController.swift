@@ -49,6 +49,18 @@ final class FramesPlayerController {
 
   private func updateFrame() {
     view?.updateFrame(to: getImage(at: currentFrameIndex))
+    prefetchImage(at: currentFrameIndex + 5)
+  }
+
+  private func prefetchFirstImages() {
+    let imagesCount = min(5, frames.count)
+    for i in 0 ..< imagesCount {
+      prefetchImage(at: i)
+    }
+  }
+
+  private func prefetchImage(at index: Int) {
+    frames[safe: index]?.prefetchImage()
   }
 
   private func getImage(at index: Int) -> UIImage? {
@@ -59,6 +71,7 @@ final class FramesPlayerController {
 extension FramesPlayerController: FramesPlayerInteractor {
   func configure(with frames: [FrameModel]) {
     self.frames = frames
+    prefetchFirstImages()
     currentFrameIndex = 0
     updateFrame()
   }
