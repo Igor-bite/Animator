@@ -153,20 +153,26 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   }
 
   func addNewLayer() {
-    let frameImage = drawingInteractor?.produceCurrentSketchImage()
-    frames[selectedFrameIndex] = FrameModel(
-      image: frameImage,
-      previewSize: framePreviewSize
-    )
-    view?.updatePreviousFrame(with: frameImage)
-    selectedFrameIndex += 1
-    drawingInteractor?.resetForNewSketch()
+    addNewLayer(at: selectedFrameIndex, needsSelection: true)
+  }
+
+  private func addNewLayer(at index: Int, needsSelection: Bool) {
+    if needsSelection {
+      let frameImage = drawingInteractor?.produceCurrentSketchImage()
+      frames[selectedFrameIndex] = FrameModel(
+        image: frameImage,
+        previewSize: framePreviewSize
+      )
+      view?.updatePreviousFrame(with: frameImage)
+      selectedFrameIndex = index
+      drawingInteractor?.resetForNewSketch()
+    }
     frames.insert(
       FrameModel(
         image: nil,
         previewSize: framePreviewSize
       ),
-      at: selectedFrameIndex
+      at: index
     )
     updateLayersViewIfNeeded()
   }
@@ -289,4 +295,10 @@ extension ProjectEditorViewModel: LayersPreviewDelegate {
     frames[safe: index - 2]?.prefetchImage()
     frames[safe: index + 1]?.prefetchImage()
   }
+
+  func addNewFrameToEnd() {
+    addNewLayer(at: frames.count, needsSelection: true)
+  }
+
+  func triggerGenerateFramesFlow() {}
 }

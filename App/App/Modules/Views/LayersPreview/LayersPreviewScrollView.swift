@@ -7,6 +7,8 @@ import UIKit
 
 protocol LayersPreviewDelegate: AnyObject {
   func didSelectFrame(at index: Int)
+  func addNewFrameToEnd()
+  func triggerGenerateFramesFlow()
 }
 
 final class LayersPreviewScrollView: UIView {
@@ -17,6 +19,11 @@ final class LayersPreviewScrollView: UIView {
   private var needsScrollSelection = true
   private var selectionIndex: Int?
   private var selectedCell: LayerPreviewCell?
+
+  private var serviceActions: [LayerActionCell.ActionType] = [
+    .createNewLayer,
+//    .generateLayers
+  ]
 
   var itemAspectRatio: CGFloat = 2 {
     didSet {
@@ -105,6 +112,7 @@ final class LayersPreviewScrollView: UIView {
     view.isPagingEnabled = false
     view.delaysContentTouches = false
     view.registerCell(of: LayerPreviewCell.self)
+    view.registerCell(of: LayerActionCell.self)
     return view
   }
 }
@@ -114,15 +122,41 @@ extension LayersPreviewScrollView: UICollectionViewDelegate {
     _ collectionView: UICollectionView,
     didSelectItemAt indexPath: IndexPath
   ) {
-    needsScrollSelection = false
-    delegate?.didSelectFrame(at: indexPath.item)
+    handleCellSelection(at: indexPath)
+  }
 
-    self.selectedCell?.setSelection(isSelected: false)
-    let selectedCell = collectionView.cellForItem(at: indexPath)
-    self.selectedCell = selectedCell as? LayerPreviewCell
-    self.selectedCell?.setSelection(isSelected: true)
-    collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+  func collectionView(
+    _ collectionView: UICollectionView,
+    didDeselectItemAt indexPath: IndexPath
+  ) {
+    handleCellSelection(at: indexPath)
+  }
+
+  private func handleCellSelection(at indexPath: IndexPath) {
+    if indexPath.item < layers.count {
+      needsScrollSelection = false
+      delegate?.didSelectFrame(at: indexPath.item)
+
+      self.selectedCell?.setSelection(isSelected: false)
+      let selectedCell = collectionView.cellForItem(at: indexPath)
+      self.selectedCell = selectedCell as? LayerPreviewCell
+      self.selectedCell?.setSelection(isSelected: true)
+      collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+    } else {
+      let actionIndex = indexPath.item - layers.count
+      let action = serviceActions[actionIndex]
+      handleServiceAction(action)
+    }
     impactGenerator.impactOccurred()
+  }
+
+  private func handleServiceAction(_ action: LayerActionCell.ActionType) {
+    switch action {
+    case .createNewLayer:
+      delegate?.addNewFrameToEnd()
+    case .generateLayers:
+      delegate?.triggerGenerateFramesFlow()
+    }
   }
 
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -130,6 +164,7 @@ extension LayersPreviewScrollView: UICollectionViewDelegate {
           let indexPath = collectionView.indexPathForItem(
             at: collectionView.bounds.center
           ),
+          indexPath.item < layers.count,
           let selectedCell = collectionView.cellForItem(at: indexPath),
           selectedCell != self.selectedCell
     else { return }
@@ -157,10 +192,14 @@ extension LayersPreviewScrollView: UICollectionViewDelegate {
   ) {
     let cur = targetContentOffset.pointee.x - scrollView.contentInset.left
     let itemSize = Constants.itemWidth + Constants.itemSpacing
-    let item = ((cur + Constants.itemWidth / 2) / itemSize).rounded(.down)
-    let new = (item - 1) * itemSize + Constants.itemWidth
-
-    targetContentOffset.pointee.x = max(0, new)
+    let item = Int((cur + Constants.itemWidth / 2) / itemSize)
+    if item < layers.count {
+      let new = Double(item - 1) * itemSize + Constants.itemWidth
+      targetContentOffset.pointee.x = max(0, new)
+    } else {
+      let new = Double(layers.count - 2) * itemSize + Constants.itemWidth
+      targetContentOffset.pointee.x = max(0, new)
+    }
   }
 }
 
@@ -170,26 +209,34 @@ extension LayersPreviewScrollView: UICollectionViewDataSource {
   }
 
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    layers.count
+    layers.count + serviceActions.count
   }
 
   func collectionView(
     _ collectionView: UICollectionView,
     cellForItemAt indexPath: IndexPath
   ) -> UICollectionViewCell {
-    let cell: LayerPreviewCell? = collectionView.dequeueReusableCell(for: indexPath)
-    if let model = layers[safe: indexPath.item] {
-      cell?.configure(with: model)
-    }
-    if let selectionIndex,
-       indexPath.item == selectionIndex
-    {
-      self.selectionIndex = nil
-      cell?.setSelection(isSelected: true)
+    if indexPath.item >= layers.count {
+      let cell: LayerActionCell? = collectionView.dequeueReusableCell(for: indexPath)
+      let actionIndex = indexPath.item - layers.count
+      let action = serviceActions[actionIndex]
+      cell?.configure(with: action)
+      return cell ?? UICollectionViewCell()
     } else {
-      cell?.setSelection(isSelected: false)
+      let cell: LayerPreviewCell? = collectionView.dequeueReusableCell(for: indexPath)
+      if let model = layers[safe: indexPath.item] {
+        cell?.configure(with: model)
+      }
+      if let selectionIndex,
+         indexPath.item == selectionIndex
+      {
+        self.selectionIndex = nil
+        cell?.setSelection(isSelected: true)
+      } else {
+        cell?.setSelection(isSelected: false)
+      }
+      return cell ?? UICollectionViewCell()
     }
-    return cell ?? UICollectionViewCell()
   }
 }
 
