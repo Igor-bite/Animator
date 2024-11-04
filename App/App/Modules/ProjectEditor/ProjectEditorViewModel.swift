@@ -244,10 +244,25 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   }
 
   func share() {
+    playerInteractor?.stop()
+    view?.showExportLoadingAlert()
     gifExporter.export(
       frames: frames,
       fps: playerConfig.fps
-    )
+    ) { [weak self] in
+      self?.view?.closeExportLoadingAlert()
+    } quickLookDismissed: { [weak self] in
+      if case .playing = self?.state.value {
+        self?.playerInteractor?.start()
+      }
+    }
+  }
+
+  func cancelExport() {
+    gifExporter.isCancelled = true
+    if case .playing = state.value {
+      playerInteractor?.start()
+    }
   }
 
   func pause() {

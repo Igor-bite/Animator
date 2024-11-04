@@ -16,6 +16,8 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateGeometrySelector()
   func updatePreviousFrame(with image: UIImage?)
   func askToRemoveAll(removeAction: @escaping () -> Void)
+  func showExportLoadingAlert()
+  func closeExportLoadingAlert()
 }
 
 protocol ProjectEditorViewOutput: AnyObject,
@@ -35,6 +37,7 @@ protocol ProjectEditorViewOutput: AnyObject,
 
   func generateFrames(count: Int)
   func cancelGenerationFlow()
+  func cancelExport()
 }
 
 protocol StateDependentView {
@@ -496,6 +499,36 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
     alertController.addAction(submitAction)
 
     present(alertController, animated: true, completion: nil)
+  }
+
+  func showExportLoadingAlert() {
+    let alertController = UIAlertController(
+      title: "Экспортируем",
+      message: nil,
+      preferredStyle: .alert
+    )
+
+    let indicator = UIActivityIndicatorView(frame: alertController.view.bounds)
+    indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    alertController.view.addSubview(indicator)
+    indicator.isUserInteractionEnabled = false
+    indicator.startAnimating()
+
+    let cancelAction = UIAlertAction(
+      title: "Отменить",
+      style: .destructive
+    ) { _ in
+      self.viewModel.cancelExport()
+    }
+
+    alertController.addAction(cancelAction)
+
+    present(alertController, animated: true, completion: nil)
+    loadingViewController = alertController
+  }
+
+  func closeExportLoadingAlert() {
+    loadingViewController?.dismiss(animated: true)
   }
 }
 
