@@ -178,7 +178,7 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
   }
 
   func addNewLayer() {
-    addNewLayer(at: selectedFrameIndex, needsSelection: true)
+    addNewLayer(at: selectedFrameIndex + 1, needsSelection: true)
   }
 
   private func addNewLayer(at index: Int, needsSelection: Bool) {
