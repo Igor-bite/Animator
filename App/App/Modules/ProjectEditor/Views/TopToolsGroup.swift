@@ -223,28 +223,36 @@ extension TopToolsGroup: StateDependentView {
       redoUndoStack.alpha = 1
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 1
+      removeAllLayersButton.isUserInteractionEnabled = false
       removeAllLayersButton.alpha = 0
       layersViewButton.isSelected = false
+      shareButton.isUserInteractionEnabled = false
       shareButton.alpha = 0
     case .drawingInProgress:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 0
+      removeAllLayersButton.isUserInteractionEnabled = false
       removeAllLayersButton.alpha = 0
       layersViewButton.isSelected = false
+      shareButton.isUserInteractionEnabled = false
       shareButton.alpha = 0
     case .managingFrames:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 0
+      removeAllLayersButton.isUserInteractionEnabled = true
       removeAllLayersButton.alpha = 1
       layersViewButton.isSelected = true
+      shareButton.isUserInteractionEnabled = false
       shareButton.alpha = 0
     case .playing:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 1
+      removeAllLayersButton.isUserInteractionEnabled = false
       removeAllLayersButton.alpha = 0
+      shareButton.isUserInteractionEnabled = true
       shareButton.alpha = 1
     case .generationFlow:
       break
