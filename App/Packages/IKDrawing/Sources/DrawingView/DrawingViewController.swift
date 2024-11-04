@@ -12,6 +12,7 @@ public protocol DrawingViewInteractor {
   func didUpdateConfig(config: DrawingViewConfiguration)
   func produceCurrentSketchImage() -> UIImage?
   func resetForNewSketch()
+  func set(frame: UIImage)
 }
 
 final class DrawingViewController: DrawingViewOutput {
@@ -64,7 +65,7 @@ extension DrawingViewController: DrawingViewInteractor {
     if let slice = view.slice() {
       redoHistory.append(.slice(slice))
     }
-    view.execute(command: lastCommand)
+    view.execute(command: lastCommand, animated: true)
     delegate?.didUpdateCommandHistory()
   }
 
@@ -79,7 +80,7 @@ extension DrawingViewController: DrawingViewInteractor {
     } else {
       history.append(.clearAll)
     }
-    view.execute(command: lastCommand)
+    view.execute(command: lastCommand, animated: true)
     delegate?.didUpdateCommandHistory()
   }
 
@@ -96,5 +97,27 @@ extension DrawingViewController: DrawingViewInteractor {
     redoHistory.removeAll()
     view?.reset()
     delegate?.didUpdateCommandHistory()
+  }
+
+  func set(frame: UIImage) {
+    guard let view,
+          let image = frame.cgImage
+    else { return }
+    history.removeAll()
+    redoHistory.removeAll()
+    view.reset()
+    delegate?.didUpdateCommandHistory()
+    view.execute(
+      command: .slice(
+        DrawingSlice(
+          image: image,
+          rect: CGRect(
+            origin: .zero,
+            size: view.imageSize
+          )
+        )
+      ),
+      animated: false
+    )
   }
 }

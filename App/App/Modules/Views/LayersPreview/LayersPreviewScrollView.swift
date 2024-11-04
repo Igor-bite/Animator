@@ -46,18 +46,22 @@ final class LayersPreviewScrollView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func configure(with layers: [LayerPreviewModel]) {
+  func configure(
+    with layers: [LayerPreviewModel],
+    selectionIndex: Int
+  ) {
     impactGenerator.prepare()
     self.layers = layers
+    self.selectionIndex = selectionIndex
     UIView.performWithoutAnimation {
       collectionView.reloadData()
-      selectionIndex = layers.count - 1
       collectionView.scrollToItem(
-        at: IndexPath(item: selectionIndex ?? .zero, section: .zero),
+        at: IndexPath(item: selectionIndex, section: .zero),
         at: .centeredHorizontally,
         animated: false
       )
     }
+    delegate?.didSelectFrame(at: selectionIndex)
   }
 
   private func setupUI() {
@@ -88,6 +92,7 @@ final class LayersPreviewScrollView: UIView {
     view.allowsSelection = true
     view.allowsMultipleSelection = true
     view.isPagingEnabled = false
+    view.delaysContentTouches = false
     view.registerCell(of: LayerPreviewCell.self)
     return view
   }
@@ -197,8 +202,8 @@ extension LayersPreviewScrollView: StateDependentView {
       alpha = 0
     case .drawingInProgress:
       alpha = 0
-    case let .managingFrames(frames):
-      configure(with: frames.map { LayerPreviewModel(frame: $0) })
+    case let .managingFrames(frames, selectionIndex):
+      configure(with: frames.map { LayerPreviewModel(frame: $0) }, selectionIndex: selectionIndex)
       alpha = 1
     case .playing:
       alpha = 0

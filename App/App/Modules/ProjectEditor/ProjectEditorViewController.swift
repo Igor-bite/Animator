@@ -174,11 +174,12 @@ final class ProjectEditorViewController: UIViewController {
           self.updateColorSelector(shouldClose: true)
         }
       case .managingFrames:
-        self.previousFrameImageView.alpha = 1
+        self.previousFrameImageView.alpha = 0.5
         self.lineWidthSelector.alpha = 0
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
         }
+        self.drawingView.alpha = 1
       case .playing:
         UIView.performWithoutAnimation {
           self.framesPlayerView.alpha = 1

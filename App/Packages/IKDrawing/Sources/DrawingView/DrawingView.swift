@@ -5,7 +5,9 @@ import SnapKit
 import UIKit
 
 protocol DrawingViewInput: AnyObject {
-  func execute(command: DrawingCommand)
+  var imageSize: CGSize { get }
+
+  func execute(command: DrawingCommand, animated: Bool)
   func slice() -> DrawingSlice?
   func currentSketchImage() -> UIImage?
   func reset()
@@ -54,7 +56,7 @@ final class DrawingView: UIView {
     return UIGraphicsImageRenderer(size: bounds.size, format: format)
   }()
 
-  private lazy var imageSize = bounds.size
+  lazy var imageSize = bounds.size
 
   init(controller: DrawingViewOutput) {
     self.controller = controller
@@ -90,7 +92,7 @@ final class DrawingView: UIView {
 // MARK: - DrawingViewInput
 
 extension DrawingView: DrawingViewInput {
-  func execute(command: DrawingCommand) {
+  func execute(command: DrawingCommand, animated: Bool) {
     let action = { [weak self] in
       guard let self else { return }
       switch command {
@@ -101,11 +103,15 @@ extension DrawingView: DrawingViewInput {
       }
     }
 
-    UIView.transition(
-      with: self,
-      duration: 0.2,
-      options: .transitionCrossDissolve
-    ) {
+    if animated {
+      UIView.transition(
+        with: self,
+        duration: 0.2,
+        options: .transitionCrossDissolve
+      ) {
+        action()
+      }
+    } else {
       action()
     }
   }

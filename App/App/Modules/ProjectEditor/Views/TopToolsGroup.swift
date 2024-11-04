@@ -13,6 +13,8 @@ protocol TopToolsGroupInput {
 protocol TopToolsGroupOutput: AnyObject {
   var canUndo: Bool { get }
   var canRedo: Bool { get }
+  var canPlay: Bool { get }
+  var canOpenLayers: Bool { get }
 
   func undo()
   func redo()
@@ -64,7 +66,8 @@ final class TopToolsGroup: UIView {
 
   private let layersViewButton = TapIcon(
     size: .large(),
-    icon: Asset.layers.image
+    icon: Asset.layers.image,
+    selectionType: .tint(Colors.accent)
   )
 
   private let layerToolsStack = UIStackView()
@@ -176,6 +179,13 @@ final class TopToolsGroup: UIView {
       selectionType: .tint(redoTint)
     )
     redoButton.isUserInteractionEnabled = output.canRedo
+
+    let playTint = output.canPlay ? Colors.foreground : Colors.disabled
+    playPauseButton.configure(
+      tint: playTint,
+      selectionType: .icon(Asset.pause.image)
+    )
+    playPauseButton.isUserInteractionEnabled = output.canPlay
   }
 }
 
@@ -192,14 +202,17 @@ extension TopToolsGroup: StateDependentView {
       redoUndoStack.alpha = 1
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 1
+      layersViewButton.isSelected = false
     case .drawingInProgress:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 0
+      layersViewButton.isSelected = false
     case .managingFrames:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 0
+      layersViewButton.isSelected = true
     case .playing:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
