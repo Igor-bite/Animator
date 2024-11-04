@@ -16,6 +16,7 @@ final class LayersPreviewScrollView: UIView {
   private let impactGenerator = UIImpactFeedbackGenerator(style: .light)
   private var needsScrollSelection = true
   private var selectionIndex: Int?
+  private var selectedCell: LayerPreviewCell?
 
   var itemAspectRatio: CGFloat = 2 {
     didSet {
@@ -48,17 +49,27 @@ final class LayersPreviewScrollView: UIView {
 
   func configure(
     with layers: [LayerPreviewModel],
-    selectionIndex: Int
+    selectionIndex: Int,
+    animated: Bool
   ) {
     impactGenerator.prepare()
     self.layers = layers
     self.selectionIndex = selectionIndex
-    UIView.performWithoutAnimation {
+    if !animated {
+      UIView.performWithoutAnimation {
+        collectionView.reloadData()
+        collectionView.scrollToItem(
+          at: IndexPath(item: selectionIndex, section: .zero),
+          at: .centeredHorizontally,
+          animated: false
+        )
+      }
+    } else {
       collectionView.reloadData()
       collectionView.scrollToItem(
         at: IndexPath(item: selectionIndex, section: .zero),
         at: .centeredHorizontally,
-        animated: false
+        animated: true
       )
     }
     delegate?.didSelectFrame(at: selectionIndex)
@@ -96,8 +107,6 @@ final class LayersPreviewScrollView: UIView {
     view.registerCell(of: LayerPreviewCell.self)
     return view
   }
-
-  private var selectedCell: LayerPreviewCell?
 }
 
 extension LayersPreviewScrollView: UICollectionViewDelegate {
@@ -177,6 +186,8 @@ extension LayersPreviewScrollView: UICollectionViewDataSource {
     {
       self.selectionIndex = nil
       cell?.setSelection(isSelected: true)
+    } else {
+      cell?.setSelection(isSelected: false)
     }
     return cell ?? UICollectionViewCell()
   }
@@ -203,8 +214,20 @@ extension LayersPreviewScrollView: StateDependentView {
     case .drawingInProgress:
       alpha = 0
     case let .managingFrames(frames, selectionIndex):
-      configure(with: frames.map { LayerPreviewModel(frame: $0) }, selectionIndex: selectionIndex)
-      alpha = 1
+      if alpha == 0 {
+        alpha = 1
+        configure(
+          with: frames.map { LayerPreviewModel(frame: $0) },
+          selectionIndex: selectionIndex,
+          animated: false
+        )
+      } else {
+        configure(
+          with: frames.map { LayerPreviewModel(frame: $0) },
+          selectionIndex: selectionIndex,
+          animated: true
+        )
+      }
     case .playing:
       alpha = 0
     }
