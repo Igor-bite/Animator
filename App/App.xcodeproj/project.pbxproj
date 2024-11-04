@@ -25,6 +25,7 @@
 		0A3C669B2CCE582E008198BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C66412CCE56D0008198BC /* AppDelegate.swift */; };
 		0A3C669C2CCE5834008198BC /* ServiceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */; };
 		0A3C66B92CCE67C2008198BC /* IKUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 0A3C66B82CCE67C2008198BC /* IKUtils */; };
+		0A433BAF2CD9233C00634211 /* GeometrySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A433BAE2CD9233C00634211 /* GeometrySelectorView.swift */; };
 		0A9E3C932CD9154000FEB555 /* ServiceCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A9E3C922CD9154000FEB555 /* ServiceCell.swift */; };
 		0ABEAACC2CD79679005E5758 /* FrameModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAACB2CD79679005E5758 /* FrameModel.swift */; };
 		0ABEAACF2CD7A376005E5758 /* FramesPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABEAACE2CD7A376005E5758 /* FramesPlayerView.swift */; };
@@ -59,6 +60,7 @@
 		0A3C66432CCE56D0008198BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0A3C664D2CCE56D0008198BC /* ServiceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceLocator.swift; sourceTree = "<group>"; };
 		0A3C667A2CCE5765008198BC /* Assets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Assets.swift; sourceTree = "<group>"; };
+		0A433BAE2CD9233C00634211 /* GeometrySelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeometrySelectorView.swift; sourceTree = "<group>"; };
 		0A9E3C922CD9154000FEB555 /* ServiceCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceCell.swift; sourceTree = "<group>"; };
 		0ABEAACB2CD79679005E5758 /* FrameModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameModel.swift; sourceTree = "<group>"; };
 		0ABEAACE2CD7A376005E5758 /* FramesPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FramesPlayerView.swift; sourceTree = "<group>"; };
@@ -149,6 +151,7 @@
 				0A1A25EB2CD02D0700EABC95 /* PaperView */,
 				0A2D26BE2CD66FEC006403C9 /* LineWidthSelector.swift */,
 				0A2D26C02CD68AB2006403C9 /* ColorSelectorView.swift */,
+				0A433BAE2CD9233C00634211 /* GeometrySelectorView.swift */,
 				0A2D26C22CD69781006403C9 /* ColorSliderWithInput.swift */,
 				0A2D26C42CD6A2A0006403C9 /* ColorSlider.swift */,
 				0ABEAAD82CD7DBB8005E5758 /* LayersPreview */,
@@ -373,6 +376,7 @@
 				0AD20F372CD39AEA009790AC /* TopToolsGroup.swift in Sources */,
 				0A1A25E52CD01C3D00EABC95 /* ProjectEditorViewModel.swift in Sources */,
 				0ABEAADA2CD7DD8F005E5758 /* LayerPreviewModel.swift in Sources */,
+				0A433BAF2CD9233C00634211 /* GeometrySelectorView.swift in Sources */,
 				0A2D26C52CD6A2A0006403C9 /* ColorSlider.swift in Sources */,
 				0A9E3C932CD9154000FEB555 /* ServiceCell.swift in Sources */,
 				0A2D26C12CD68AB2006403C9 /* ColorSelectorView.swift in Sources */,

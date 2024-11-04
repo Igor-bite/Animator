@@ -237,7 +237,9 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     view?.updateLineWidthAlpha()
   }
 
-  func didTapShapeSelector() {}
+  func didTapShapeSelector() {
+    view?.updateGeometrySelector()
+  }
 
   func didTapColorSelector() {
     view?.updateColorSelector(shouldClose: true)
@@ -301,4 +303,11 @@ extension ProjectEditorViewModel: LayersPreviewDelegate {
   }
 
   func triggerGenerateFramesFlow() {}
+}
+
+extension ProjectEditorViewModel: GeometrySelectorViewDelegate {
+  func didSelect(object: GeometryObject) {
+    drawingConfig.tool = .geometry(object)
+    view?.updateGeometrySelector()
+  }
 }

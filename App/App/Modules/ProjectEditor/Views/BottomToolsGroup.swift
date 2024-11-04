@@ -31,13 +31,25 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
 
   private lazy var drawingToolsButtons: SelectableIconsGroup = {
     let icons: [SelectableIconsGroupModel.IconModel] = [
-      .init(id: DrawingTool.pen.rawValue, icon: Asset.pencil.image),
-      .init(id: DrawingTool.brush.rawValue, icon: Asset.brush.image),
-      .init(id: DrawingTool.eraser.rawValue, icon: Asset.eraser.image),
+      .init(
+        id: DrawingTool.pen.id,
+        icon: Asset.pencil.image,
+        model: DrawingTool.pen
+      ),
+      .init(
+        id: DrawingTool.brush.id,
+        icon: Asset.brush.image,
+        model: DrawingTool.brush
+      ),
+      .init(
+        id: DrawingTool.eraser.id,
+        icon: Asset.eraser.image,
+        model: DrawingTool.eraser
+      ),
     ]
     let model = SelectableIconsGroupModel(
       icons: icons,
-      intiallySelectedId: model.selectedTool?.rawValue ?? ""
+      intiallySelectedId: model.selectedTool?.id ?? ""
     )
     let view = SelectableIconsGroup(model: model)
     view.delegate = self
@@ -123,6 +135,21 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
 
   func updateShapeSelector(isSelected: Bool) {
     shapeSelectorButton.isSelected = isSelected
+  }
+
+  func updateShapeSelector(object: GeometryObject?) {
+    if let image = object?.image {
+      shapeSelectorButton.configure(
+        icon: image,
+        tint: Colors.accent
+      )
+      drawingToolsButtons.deselect()
+    } else {
+      shapeSelectorButton.configure(
+        icon: Asset.shapes.image.withRenderingMode(.alwaysTemplate),
+        tint: Colors.foreground
+      )
+    }
   }
 
   private func setupKeyboardObserver() {
@@ -216,7 +243,7 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
 
 extension BottomToolsGroup: SelectableIconsGroupDelegate {
   func didSelect(icon: SelectableIconsGroupModel.IconModel) {
-    guard let tool = DrawingTool(rawValue: icon.id) else { return }
+    guard let tool = icon.model as? DrawingTool else { return }
     output?.didSelect(tool: tool)
   }
 }

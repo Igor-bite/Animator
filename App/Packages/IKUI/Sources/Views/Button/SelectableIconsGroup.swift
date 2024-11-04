@@ -8,10 +8,16 @@ public struct SelectableIconsGroupModel {
   public struct IconModel {
     public let id: String
     public let icon: UIImage
+    public let model: Any
 
-    public init(id: String, icon: UIImage) {
+    public init(
+      id: String,
+      icon: UIImage,
+      model: Any
+    ) {
       self.id = id
       self.icon = icon
+      self.model = model
     }
   }
 
@@ -68,7 +74,14 @@ public final class SelectableIconsGroup: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
-  func setupUI() {
+  public func deselect() {
+    if let selectedView {
+      selectedView.isSelected = false
+      self.selectedView = nil
+    }
+  }
+
+  private func setupUI() {
     let elementsStack = UIStackView()
     elementsStack.spacing = model.spacing
     addSubview(elementsStack)

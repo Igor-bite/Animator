@@ -13,6 +13,7 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateLineWidthPreviewVisibility(isVisible: Bool)
   func updateLineWidthAlpha()
   func updateColorSelector(shouldClose: Bool)
+  func updateGeometrySelector()
   func updatePreviousFrame(with image: UIImage?)
 }
 
@@ -21,7 +22,8 @@ protocol ProjectEditorViewOutput: AnyObject,
   BottomToolsGroupOutput,
   LineWidthSelectorDelegate,
   ColorSelectorViewDelegate,
-  LayersPreviewDelegate
+  LayersPreviewDelegate,
+  GeometrySelectorViewDelegate
 {
   var state: CurrentValueSubject<ProjectEditorState, Never> { get }
   var drawingConfig: DrawingViewConfiguration { get }
@@ -111,6 +113,13 @@ final class ProjectEditorViewController: UIViewController {
     return view
   }()
 
+  private lazy var geometrySelectorView = {
+    let view = GeometrySelectorView()
+    view.alpha = 0
+    view.delegate = viewModel
+    return view
+  }()
+
   private lazy var layersPreviewScrollView = {
     let view = LayersPreviewScrollView()
     view.delegate = viewModel
@@ -119,6 +128,7 @@ final class ProjectEditorViewController: UIViewController {
   }()
 
   private var isColorSelectorVisible = false
+  private var isGeometrySelectorVisible = false
 
   private var bag = CancellableBag()
 
@@ -166,6 +176,7 @@ final class ProjectEditorViewController: UIViewController {
         self.previousFrameImageView.alpha = 0.5
         self.drawingView.alpha = 1
         self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
+        self.geometrySelectorView.alpha = self.isGeometrySelectorVisible ? 1 : 0
       case .drawingInProgress:
         self.lineWidthSelector.alpha = 0
         self.previousFrameImageView.alpha = 0.5
@@ -173,11 +184,17 @@ final class ProjectEditorViewController: UIViewController {
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
         }
+        if self.isGeometrySelectorVisible {
+          self.updateGeometrySelector()
+        }
       case .managingFrames:
         self.previousFrameImageView.alpha = 0.5
         self.lineWidthSelector.alpha = 0
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
+        }
+        if self.isGeometrySelectorVisible {
+          self.updateGeometrySelector()
         }
         self.drawingView.alpha = 1
       case .playing:
@@ -190,6 +207,9 @@ final class ProjectEditorViewController: UIViewController {
 
         if self.isColorSelectorVisible {
           self.updateColorSelector(shouldClose: true)
+        }
+        if self.isGeometrySelectorVisible {
+          self.updateGeometrySelector()
         }
       }
     }
@@ -218,6 +238,7 @@ final class ProjectEditorViewController: UIViewController {
       lineWidthSelector,
       lineWidthPreview,
       colorSelectorView,
+      geometrySelectorView,
       layersPreviewScrollView
     )
 
@@ -245,7 +266,7 @@ final class ProjectEditorViewController: UIViewController {
     }
 
     bottomToolsView.snp.makeConstraints { make in
-      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
+      make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-4)
       make.leading.equalToSuperview().offset(16)
       make.trailing.equalToSuperview().offset(-16)
     }
@@ -261,6 +282,11 @@ final class ProjectEditorViewController: UIViewController {
     }
 
     colorSelectorView.snp.makeConstraints { make in
+      make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
+      make.centerX.equalToSuperview()
+    }
+
+    geometrySelectorView.snp.makeConstraints { make in
       make.bottom.equalTo(bottomToolsView.snp.top).offset(-16)
       make.centerX.equalToSuperview()
     }
@@ -315,9 +341,16 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
     ) {
       action()
     }
+    bottomToolsView.updateShapeSelector(object: viewModel.drawingConfig.selectedShape)
+    if viewModel.drawingConfig.selectedShape == nil {
+      geometrySelectorView.deselect()
+    }
   }
 
   func updateColorSelector(shouldClose: Bool) {
+    if isGeometrySelectorVisible {
+      updateGeometrySelector()
+    }
     let isNowVisible = isColorSelectorVisible
     let shouldBeVisible = !isNowVisible || (isNowVisible && !shouldClose)
     isColorSelectorVisible = shouldBeVisible
@@ -333,6 +366,25 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
       options: .curveEaseInOut
     ) {
       self.colorSelectorView.alpha = shouldBeVisible ? 1 : 0
+    }
+  }
+
+  func updateGeometrySelector() {
+    if isColorSelectorVisible {
+      updateColorSelector(shouldClose: true)
+    }
+    let isNowVisible = isGeometrySelectorVisible
+    let shouldBeVisible = !isNowVisible
+    isGeometrySelectorVisible = shouldBeVisible
+    bottomToolsView.updateShapeSelector(isSelected: shouldBeVisible)
+    bottomToolsView.updateShapeSelector(object: viewModel.drawingConfig.selectedShape)
+
+    UIView.animate(
+      withDuration: 0.2,
+      delay: .zero,
+      options: .curveEaseInOut
+    ) {
+      self.geometrySelectorView.alpha = shouldBeVisible ? 1 : 0
     }
   }
 

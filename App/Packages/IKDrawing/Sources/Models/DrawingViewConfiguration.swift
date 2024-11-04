@@ -7,6 +7,11 @@ public struct DrawingViewConfiguration {
   public var lineWidth: CGFloat
   public var color: UIColor
 
+  public var selectedShape: GeometryObject? {
+    guard case let .geometry(object) = tool else { return nil }
+    return object
+  }
+
   public var isEraser: Bool {
     tool == .eraser
   }

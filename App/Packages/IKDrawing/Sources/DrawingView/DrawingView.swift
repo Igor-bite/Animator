@@ -258,6 +258,15 @@ extension DrawingView {
         ctx.cgContext.setFillColor(UIColor.white.cgColor)
         ctx.cgContext.addPath(shape.cgPath)
         ctx.cgContext.drawPath(using: drawingMode)
+      case let .geometry(object):
+        ctx.cgContext.setBlendMode(.normal)
+        ctx.cgContext.setLineCap(.round)
+        ctx.cgContext.setLineJoin(.round)
+        ctx.cgContext.setLineWidth(lineWidth)
+        ctx.cgContext.setStrokeColor(color.cgColor)
+        ctx.cgContext.setFillColor(color.cgColor)
+        ctx.cgContext.addPath(shape.cgPath)
+        ctx.cgContext.drawPath(using: drawingMode)
       }
       // TODO: extract drawing logic of path into separate object
     }

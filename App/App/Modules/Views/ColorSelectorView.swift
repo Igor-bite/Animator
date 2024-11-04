@@ -52,6 +52,7 @@ final class ColorSelectorView: UIView {
     let view = TapIcon(
       size: .large(),
       icon: Asset.palette.image,
+      tint: Colors.background,
       selectionType: .tint(Colors.accent)
     )
     view.addAction { [weak self] in
@@ -313,6 +314,7 @@ final class ColorSelectorView: UIView {
   }
 
   override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+    guard alpha > 0 else { return false }
     if colorSlidersBlurView.frame.contains(point) {
       return isColorSlidersVisible
     } else if recentColorsBlurView.frame.contains(point) {
