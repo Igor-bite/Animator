@@ -56,6 +56,8 @@ final class DrawingView: UIView {
     return UIGraphicsImageRenderer(size: bounds.size, format: format)
   }()
 
+  private var drawingGesturePipeline: DrawingGesturePipeline?
+
   lazy var imageSize = bounds.size
 
   init(controller: DrawingViewOutput) {
@@ -86,6 +88,29 @@ final class DrawingView: UIView {
     clipsToBounds = true
     layer.addSublayer(topLayer)
     eraserTopLayer.isEraser = true
+    setupGestures()
+  }
+
+  private func setupGestures() {
+    drawingGesturePipeline = DrawingGesturePipeline(
+      drawingView: self,
+      gestureView: self
+    )
+    drawingGesturePipeline?.gestureRecognizer?.shouldBegin = { [weak self] _ in
+      self?.controller.config.canDraw ?? false
+    }
+    drawingGesturePipeline?.onDrawing = { [weak self] state, point in
+      guard let self else { return }
+      let touchPoint = point.location
+      switch state {
+      case .began:
+        handleTouchStart(at: touchPoint)
+      case .changed:
+        handleTouchMoved(to: touchPoint)
+      case .ended, .cancelled:
+        handleTouchEnded(at: touchPoint)
+      }
+    }
   }
 }
 
@@ -238,10 +263,10 @@ extension DrawingView {
     updateTopLayer()
   }
 
-  private func handleTouchEnded(at location: CGPoint, touchSize: CGFloat) {
+  private func handleTouchEnded(at location: CGPoint) {
     guard config.canDraw else { return }
     if pointsBuffer.count == 1 {
-      let circleSize = touchSize * 2
+      let circleSize = config.lineWidth
       addCircleLayer(
         in: CGRect(
           x: location.x,
@@ -261,40 +286,5 @@ extension DrawingView {
 
     flushTopLayer()
     controller.didEndDrawing()
-  }
-
-  override public func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let touch = touches.first else { return }
-    let touchPoint = touch.preciseLocation(in: self)
-    handleTouchStart(at: touchPoint)
-  }
-
-  override public func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let superview,
-          let touch = touches.first
-    else {
-      assertionFailure()
-      return
-    }
-
-    let touchPoint = touch.preciseLocation(in: self)
-    let rawPoint = touch.preciseLocation(in: superview) // TODO: check
-    if frame.contains(rawPoint) == false {
-      touchesEnded(touches, with: event)
-      return
-    }
-
-    handleTouchMoved(to: touchPoint)
-  }
-
-  override public func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    guard let touch = touches.first else { return }
-    let touchPoint = touch.preciseLocation(in: self)
-
-    handleTouchEnded(at: touchPoint, touchSize: touch.majorRadius)
-  }
-
-  override public func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    touchesEnded(touches, with: event)
   }
 }
