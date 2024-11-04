@@ -30,16 +30,31 @@ final class DrawingView: UIView {
   private let controller: DrawingViewOutput
 
   private var touchDownPoint: CGPoint?
-  private var pointsBuffer = [CGPoint]()
+  private var pointsBuffer = [CGPoint]() {
+    didSet {
+      _lastDrawingPath = nil
+    }
+  }
+
+  private var _lastDrawingPath: UIBezierPath?
+  private var drawingPath: UIBezierPath {
+    if let _lastDrawingPath {
+      return _lastDrawingPath
+    }
+    let path = DrawingPath(withPoints: pointsBuffer).smoothPath()
+    _lastDrawingPath = path
+    return path
+  }
+
   private lazy var topLayer = DrawingTopLayer(
     lineWidth: config.lineWidth,
     strokeColor: config.color,
-    isEraser: false
+    tool: config.tool ?? .pen
   )
   private lazy var eraserTopLayer = DrawingTopLayer(
     lineWidth: config.lineWidth,
     strokeColor: .white,
-    isEraser: true
+    tool: .eraser
   )
   private var drawingImage: UIImage? {
     didSet {
@@ -87,7 +102,6 @@ final class DrawingView: UIView {
     isOpaque = false
     clipsToBounds = true
     layer.addSublayer(topLayer)
-    eraserTopLayer.isEraser = true
     setupGestures()
   }
 
@@ -179,11 +193,11 @@ extension DrawingView {
   }
 
   private func updateTopLayer() {
-    let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
     let topLayer = config.isEraser ? eraserTopLayer : topLayer
+    topLayer.tool = config.tool ?? .pen
     topLayer.lineWidth = config.lineWidth
     topLayer.strokeColor = config.color
-    topLayer.path = pathLayer.cgPath
+    topLayer.path = drawingPath.cgPath
     topLayer.setNeedsDisplay()
   }
 
@@ -194,10 +208,16 @@ extension DrawingView {
 
   private func addCircleLayer(in rect: CGRect) {
     let shape = UIBezierPath(ovalIn: rect)
-    addShapeLayer(shape, lineWidth: config.lineWidth, color: config.color)
+    addShapeLayer(shape, lineWidth: config.lineWidth, color: config.color, drawingMode: .fillStroke)
   }
 
-  private func addShapeLayer(_ shape: UIBezierPath, lineWidth: CGFloat, color: UIColor) {
+  private func addShapeLayer(
+    _ shape: UIBezierPath,
+    lineWidth: CGFloat,
+    color: UIColor,
+    drawingMode: CGPathDrawingMode = .stroke
+  ) {
+    guard let drawingTool = config.tool else { return }
     let imageSize = bounds.size
 
     let newImage = renderer.image { ctx in
@@ -207,22 +227,36 @@ extension DrawingView {
         image.draw(at: .zero)
       }
 
-      if config.isEraser {
-        ctx.cgContext.setBlendMode(.clear)
-        ctx.cgContext.setLineCap(.round)
-        ctx.cgContext.setLineJoin(.round)
-        ctx.cgContext.setLineWidth(lineWidth)
-        ctx.cgContext.setStrokeColor(UIColor.white.cgColor)
-        ctx.cgContext.addPath(shape.cgPath)
-        ctx.cgContext.drawPath(using: .stroke)
-      } else {
+      switch drawingTool {
+      case .pen:
         ctx.cgContext.setBlendMode(.normal)
         ctx.cgContext.setLineCap(.round)
         ctx.cgContext.setLineJoin(.round)
         ctx.cgContext.setLineWidth(lineWidth)
         ctx.cgContext.setStrokeColor(color.cgColor)
+        ctx.cgContext.setFillColor(color.cgColor)
         ctx.cgContext.addPath(shape.cgPath)
-        ctx.cgContext.drawPath(using: .stroke)
+        ctx.cgContext.drawPath(using: drawingMode)
+      case .brush:
+        ctx.cgContext.setBlendMode(.normal)
+        ctx.cgContext.setLineWidth(lineWidth / 2)
+        ctx.cgContext.setStrokeColor(color.cgColor)
+        ctx.cgContext.setFillColor(color.cgColor)
+        ctx.cgContext.setShadow(offset: .zero, blur: lineWidth / 2, color: color.cgColor)
+
+        for _ in 0 ..< 4 {
+          ctx.cgContext.addPath(shape.cgPath)
+          ctx.cgContext.drawPath(using: drawingMode)
+        }
+      case .eraser:
+        ctx.cgContext.setBlendMode(.clear)
+        ctx.cgContext.setLineCap(.round)
+        ctx.cgContext.setLineJoin(.round)
+        ctx.cgContext.setLineWidth(lineWidth)
+        ctx.cgContext.setStrokeColor(UIColor.white.cgColor)
+        ctx.cgContext.setFillColor(UIColor.white.cgColor)
+        ctx.cgContext.addPath(shape.cgPath)
+        ctx.cgContext.drawPath(using: drawingMode)
       }
       // TODO: extract drawing logic of path into separate object
     }
@@ -235,10 +269,13 @@ extension DrawingView {
   }
 
   private func clearTopLayer() {
-    topLayer.path = nil
-    topLayer.setNeedsDisplay()
-    eraserTopLayer.path = nil
-    eraserTopLayer.setNeedsDisplay()
+    if config.isEraser {
+      eraserTopLayer.path = nil
+      eraserTopLayer.setNeedsDisplay()
+    } else {
+      topLayer.path = nil
+      topLayer.setNeedsDisplay()
+    }
   }
 }
 
@@ -265,20 +302,19 @@ extension DrawingView {
 
   private func handleTouchEnded(at location: CGPoint) {
     guard config.canDraw else { return }
+    let circleSize = config.lineWidth / 2
     if pointsBuffer.count == 1 {
-      let circleSize = config.lineWidth
       addCircleLayer(
         in: CGRect(
-          x: location.x,
-          y: location.y,
+          x: location.x - circleSize / 2,
+          y: location.y - circleSize / 2,
           width: circleSize,
           height: circleSize
         )
       )
     } else {
-      let pathLayer = DrawingPath(withPoints: pointsBuffer).smoothPath()
       addShapeLayer(
-        pathLayer,
+        drawingPath,
         lineWidth: config.lineWidth,
         color: config.color
       )

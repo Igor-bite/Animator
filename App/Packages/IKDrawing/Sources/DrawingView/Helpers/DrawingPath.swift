@@ -40,7 +40,7 @@ extension DrawingPath {
       let newPath = UIBezierPath()
 
       if points.count > 0 {
-        for index in 0 ... points.count - 1 {
+        for index in 0 ..< points.count {
           if index == 0 {
             newPath.move(to: points[index])
           } else {

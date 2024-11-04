@@ -32,7 +32,7 @@ final class BottomToolsGroup: UIView, BottomToolsGroupInput {
   private lazy var drawingToolsButtons: SelectableIconsGroup = {
     let icons: [SelectableIconsGroupModel.IconModel] = [
       .init(id: DrawingTool.pen.rawValue, icon: Asset.pencil.image),
-//      .init(id: "brush", icon: Asset.brush.image),
+      .init(id: DrawingTool.brush.rawValue, icon: Asset.brush.image),
       .init(id: DrawingTool.eraser.rawValue, icon: Asset.eraser.image),
     ]
     let model = SelectableIconsGroupModel(

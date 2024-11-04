@@ -6,23 +6,30 @@ final class DrawingTopLayer: CALayer {
   var path: CGPath?
   var lineWidth: CGFloat
   var strokeColor: UIColor
-  var isEraser: Bool
+  var tool: DrawingTool
 
   init(
     lineWidth: CGFloat,
     strokeColor: UIColor,
-    isEraser: Bool
+    tool: DrawingTool
   ) {
     self.lineWidth = lineWidth
     self.strokeColor = strokeColor
-    self.isEraser = isEraser
+    self.tool = tool
     super.init()
+    actions = [
+      "onOrderIn": NSNull(),
+      "onOrderOut": NSNull(),
+      "sublayers": NSNull(),
+      "contents": NSNull(),
+      "bounds": NSNull(),
+    ]
   }
 
   override init(layer: Any) {
     lineWidth = 20
     strokeColor = UIColor.black
-    isEraser = false
+    tool = .pen
     super.init(layer: layer)
   }
 
@@ -32,7 +39,30 @@ final class DrawingTopLayer: CALayer {
   }
 
   override func draw(in ctx: CGContext) {
-    if isEraser {
+    switch tool {
+    case .pen:
+      ctx.setLineWidth(lineWidth)
+      ctx.setLineCap(.round)
+      ctx.setLineJoin(.round)
+      ctx.setStrokeColor(strokeColor.cgColor)
+      if let path {
+        ctx.addPath(path)
+      }
+      ctx.setBlendMode(.normal)
+      ctx.drawPath(using: .stroke)
+    case .brush:
+      ctx.setBlendMode(.normal)
+      ctx.setLineWidth(lineWidth / 2)
+      ctx.setStrokeColor(strokeColor.cgColor)
+      ctx.setShadow(offset: .zero, blur: lineWidth / 2, color: strokeColor.cgColor)
+
+      for _ in 0 ..< 4 {
+        if let path {
+          ctx.addPath(path)
+        }
+        ctx.drawPath(using: .stroke)
+      }
+    case .eraser:
       ctx.setFillColor(UIColor.gray.cgColor)
       ctx.fill(bounds)
 
@@ -46,16 +76,6 @@ final class DrawingTopLayer: CALayer {
       }
       ctx.setBlendMode(.sourceIn)
       ctx.drawPath(using: .fillStroke)
-    } else {
-      ctx.setLineWidth(lineWidth)
-      ctx.setLineCap(.round)
-      ctx.setLineJoin(.round)
-      ctx.setStrokeColor(strokeColor.cgColor)
-      if let path {
-        ctx.addPath(path)
-      }
-      ctx.setBlendMode(.normal)
-      ctx.drawPath(using: .stroke)
     }
   }
 }
