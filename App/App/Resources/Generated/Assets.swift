@@ -32,7 +32,6 @@ internal enum Asset {
   internal static let forward = ImageAsset(name: "forward")
   internal static let instruments = ImageAsset(name: "instruments")
   internal static let layers = ImageAsset(name: "layers")
-  internal static let line = ImageAsset(name: "line")
   internal static let loader = ImageAsset(name: "loader")
   internal static let palette = ImageAsset(name: "palette")
   internal static let pause = ImageAsset(name: "pause")

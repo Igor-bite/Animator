@@ -22,7 +22,7 @@ final class LayersPreviewScrollView: UIView {
 
   private var serviceActions: [LayerActionCell.ActionType] = [
     .createNewLayer,
-//    .generateLayers
+    .generateLayers,
   ]
 
   var itemAspectRatio: CGFloat = 2 {

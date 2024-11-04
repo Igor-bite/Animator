@@ -14,15 +14,23 @@ enum ProjectEditorState {
   case managingFrames(frames: [FrameModel], selectionIndex: Int)
   /// Стейт проигрывания
   case playing
+  /// Стейт генерации фреймов
+  case generationFlow(state: GenerationFlowState)
 
   var needsAnimatedChange: Bool {
     true
+  }
+
+  enum GenerationFlowState {
+    case settings
+    case loading
   }
 }
 
 final class ProjectEditorViewModel: ProjectEditorViewOutput {
   private let coordinator: ProjectEditorCoordinating
   private let gifExporter = GIFExporter()
+  private let framesGenerator = FramesGenerator()
   private var frames = [FrameModel(image: nil, previewSize: .zero)] {
     didSet {
       view?.updateTopControls()
@@ -302,7 +310,18 @@ extension ProjectEditorViewModel: LayersPreviewDelegate {
     addNewLayer(at: frames.count, needsSelection: true)
   }
 
-  func triggerGenerateFramesFlow() {}
+  func triggerGenerateFramesFlow() {
+    framesGenerator.config = drawingConfig
+    framesGenerator.drawingRect = CGRect(origin: .zero, size: drawingAreaSize)
+    framesGenerator.previewSize = framePreviewSize
+
+    framesGenerator.generateFrames(count: 100) { [weak self] generatedFrames in
+      guard let self else { return }
+      frames.append(contentsOf: generatedFrames)
+      selectedFrameIndex = frames.count - 1
+      updateLayersViewIfNeeded()
+    }
+  }
 }
 
 extension ProjectEditorViewModel: GeometrySelectorViewDelegate {
