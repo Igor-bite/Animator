@@ -21,8 +21,25 @@ final class DrawingViewController: DrawingViewOutput {
 
   var config: DrawingViewConfiguration
 
-  private var history = [DrawingCommand]()
-  private var redoHistory = [DrawingCommand]()
+  private var history = [DrawingCommand]() {
+    didSet {
+      let maxSize = 100
+      let count = history.count
+      if count > maxSize {
+        history.removeFirst(count - maxSize)
+      }
+    }
+  }
+
+  private var redoHistory = [DrawingCommand]() {
+    didSet {
+      let maxSize = 100
+      let count = redoHistory.count
+      if count > maxSize {
+        redoHistory.removeFirst(count - maxSize)
+      }
+    }
+  }
 
   init(config: DrawingViewConfiguration) {
     self.config = config

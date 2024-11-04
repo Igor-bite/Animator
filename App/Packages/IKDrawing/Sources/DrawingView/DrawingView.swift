@@ -36,6 +36,8 @@ final class DrawingView: UIView {
     }
   }
 
+  private var processedPointsCount = 0
+
   private var _lastDrawingPath: UIBezierPath?
   private var drawingPath: UIBezierPath {
     if let _lastDrawingPath {
@@ -72,6 +74,7 @@ final class DrawingView: UIView {
   }()
 
   private var drawingGesturePipeline: DrawingGesturePipeline?
+  private var previousStateSlice: DrawingSlice?
 
   lazy var imageSize = bounds.size
 
@@ -84,9 +87,7 @@ final class DrawingView: UIView {
   override func layoutSubviews() {
     super.layoutSubviews()
     topLayer.frame = bounds
-    topLayer.setNeedsDisplay()
     eraserTopLayer.frame = bounds
-    eraserTopLayer.setNeedsDisplay()
   }
 
   @available(*, unavailable)
@@ -260,12 +261,16 @@ extension DrawingView {
       }
       // TODO: extract drawing logic of path into separate object
     }
-    if drawingImage == nil {
-      controller.commit(command: .clearAll)
-    } else if let slice = slice() {
-      controller.commit(command: .slice(slice))
-    }
     drawingImage = newImage
+  }
+
+  private func savePreviousDrawingState() {
+    if let previousStateSlice {
+      controller.commit(command: .slice(previousStateSlice))
+      self.previousStateSlice = nil
+    } else {
+      controller.commit(command: .clearAll)
+    }
   }
 
   private func clearTopLayer() {
@@ -284,6 +289,7 @@ extension DrawingView {
 extension DrawingView {
   private func handleTouchStart(at location: CGPoint) {
     guard config.canDraw else { return }
+    previousStateSlice = slice()
     touchDownPoint = location
     pointsBuffer.append(location)
     if config.isEraser, drawingImageView.layer.mask == nil {
@@ -297,13 +303,25 @@ extension DrawingView {
   private func handleTouchMoved(to location: CGPoint) {
     guard config.canDraw else { return }
     pointsBuffer.append(location)
-    updateTopLayer()
+    let pointsMaxCount = 4
+    if pointsBuffer.count == pointsMaxCount {
+      addShapeLayer(
+        drawingPath,
+        lineWidth: config.lineWidth,
+        color: config.color
+      )
+      processedPointsCount += pointsBuffer.count
+      flushTopLayer()
+      pointsBuffer.append(location)
+    } else {
+      updateTopLayer()
+    }
   }
 
   private func handleTouchEnded(at location: CGPoint) {
     guard config.canDraw else { return }
     let circleSize = config.lineWidth / 2
-    if pointsBuffer.count == 1 {
+    if pointsBuffer.count == 1, processedPointsCount == 0 {
       addCircleLayer(
         in: CGRect(
           x: location.x - circleSize / 2,
@@ -319,7 +337,8 @@ extension DrawingView {
         color: config.color
       )
     }
-
+    processedPointsCount = 0
+    savePreviousDrawingState()
     flushTopLayer()
     controller.didEndDrawing()
   }

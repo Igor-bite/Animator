@@ -39,6 +39,8 @@ final class DrawingSlice {
   }
 
   deinit {
-    try? FileManager.default.removeItem(atPath: self.path)
+    DispatchQueue.global(qos: .background).async { [path] in
+      try? FileManager.default.removeItem(atPath: path)
+    }
   }
 }
