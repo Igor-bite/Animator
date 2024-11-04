@@ -217,6 +217,8 @@ extension TopToolsGroup: StateDependentView {
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 1
+    case .generationFlow:
+      break
     }
   }
 }

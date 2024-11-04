@@ -269,6 +269,8 @@ extension BottomToolsGroup: StateDependentView {
     case .playing:
       drawingContainerView.alpha = 0
       fpsSlider.alpha = 1
+    case .generationFlow:
+      break
     }
   }
 }

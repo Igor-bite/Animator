@@ -19,6 +19,7 @@ final class FramesGenerator {
     .square,
     .triangle,
   ]
+  private var workItem: DispatchWorkItem?
 
   var drawingRect: CGRect?
   var previewSize: CGSize?
@@ -28,7 +29,7 @@ final class FramesGenerator {
     count: Int,
     completion: @escaping ([FrameModel]) -> Void
   ) {
-    mainBGQueue.async { [weak self] in
+    let workitem = DispatchWorkItem { [weak self] in
       guard let self,
             let drawingRect,
             let previewSize
@@ -55,11 +56,16 @@ final class FramesGenerator {
 
       let stepsCountForAnimation = 10
       var chunkStart = 0
+      let group = DispatchGroup()
 
       while chunkStart < count {
+        guard let workItem = self.workItem,
+              !workItem.isCancelled
+        else { return }
         let renderer = makeRenderer()
         let stepsCount = min(stepsCountForAnimation, count - chunkStart)
-        renderingQueue.sync { [chunkStart, renderer, startSize, startOrigin, endSize, endOrigin, stepsCountForAnimation, shape] in
+        group.enter()
+        renderingQueue.async { [chunkStart, renderer, startSize, startOrigin, endSize, endOrigin, stepsCountForAnimation, shape] in
           let diffX = endOrigin.x - startOrigin.x
           let diffY = endOrigin.y - startOrigin.y
 
@@ -89,6 +95,7 @@ final class FramesGenerator {
             )
             frames[chunkStart + i] = frame
           }
+          group.leave()
         }
         chunkStart += stepsCountForAnimation
         startOrigin = endOrigin
@@ -97,10 +104,17 @@ final class FramesGenerator {
         endOrigin = getTargetOrigin(for: endSize)
       }
 
-      DispatchQueue.main.async {
+      group.notify(queue: .main) {
         completion(frames)
       }
     }
+    workItem = workitem
+    mainBGQueue.async(execute: workitem)
+  }
+
+  func cancel() {
+    workItem?.cancel()
+    workItem = nil
   }
 
   private func generateFrame(

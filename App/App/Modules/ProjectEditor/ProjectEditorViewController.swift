@@ -31,6 +31,9 @@ protocol ProjectEditorViewOutput: AnyObject,
   var playerConfig: FramesPlayerConfig { get }
   var playerInteractor: FramesPlayerInteractor? { get set }
   var drawingAreaSize: CGSize { get set }
+
+  func generateFrames(count: Int)
+  func cancelGenerationFlow()
 }
 
 protocol StateDependentView {
@@ -127,6 +130,7 @@ final class ProjectEditorViewController: UIViewController {
     return view
   }()
 
+  private var loadingViewController: UIViewController?
   private var isColorSelectorVisible = false
   private var isGeometrySelectorVisible = false
 
@@ -177,6 +181,7 @@ final class ProjectEditorViewController: UIViewController {
         self.drawingView.alpha = 1
         self.colorSelectorView.alpha = self.isColorSelectorVisible ? 1 : 0
         self.geometrySelectorView.alpha = self.isGeometrySelectorVisible ? 1 : 0
+        self.loadingViewController?.dismiss(animated: true)
       case .drawingInProgress:
         self.lineWidthSelector.alpha = 0
         self.previousFrameImageView.alpha = 0.5
@@ -187,6 +192,7 @@ final class ProjectEditorViewController: UIViewController {
         if self.isGeometrySelectorVisible {
           self.updateGeometrySelector()
         }
+        self.loadingViewController?.dismiss(animated: true)
       case .managingFrames:
         self.previousFrameImageView.alpha = 0.5
         self.lineWidthSelector.alpha = 0
@@ -197,6 +203,7 @@ final class ProjectEditorViewController: UIViewController {
           self.updateGeometrySelector()
         }
         self.drawingView.alpha = 1
+        self.loadingViewController?.dismiss(animated: true)
       case .playing:
         UIView.performWithoutAnimation {
           self.framesPlayerView.alpha = 1
@@ -210,6 +217,14 @@ final class ProjectEditorViewController: UIViewController {
         }
         if self.isGeometrySelectorVisible {
           self.updateGeometrySelector()
+        }
+        self.loadingViewController?.dismiss(animated: true)
+      case let .generationFlow(generationFlowState):
+        switch generationFlowState {
+        case .loading:
+          self.loadingViewController = self.showGenerationInProgressState()
+        case .settings:
+          self.showSettingsAlert()
         }
       }
     }
@@ -225,6 +240,70 @@ final class ProjectEditorViewController: UIViewController {
     } else {
       action()
     }
+  }
+
+  private func showGenerationInProgressState() -> UIViewController {
+    let alertController = UIAlertController(
+      title: "Генерируем",
+      message: nil,
+      preferredStyle: .alert
+    )
+
+    let indicator = UIActivityIndicatorView(frame: alertController.view.bounds)
+    indicator.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    alertController.view.addSubview(indicator)
+    indicator.isUserInteractionEnabled = false
+    indicator.startAnimating()
+
+    let cancelAction = UIAlertAction(
+      title: "Отмена",
+      style: .default
+    ) { _ in
+      self.viewModel.cancelGenerationFlow()
+    }
+
+    alertController.addAction(cancelAction)
+
+    present(alertController, animated: true, completion: nil)
+    return alertController
+  }
+
+  private func showSettingsAlert(withError: Bool = false) {
+    let alertController = UIAlertController(
+      title: "\(withError ? "Ошибка ввода\n\n" : "")Сколько фреймов сгененрировать?",
+      message: "Введите число от 1 до 100000",
+      preferredStyle: .alert
+    )
+
+    alertController.addTextField { textField in
+      textField.placeholder = "10"
+      textField.text = "10"
+    }
+
+    let cancelAction = UIAlertAction(title: "Отменить", style: .cancel) { _ in
+      self.viewModel.cancelGenerationFlow()
+    }
+
+    let submitAction = UIAlertAction(
+      title: "Сгенерировать",
+      style: .default
+    ) { _ in
+      guard let text = alertController.textFields?.first?.text,
+            let framesCount = Int(text),
+            framesCount <= 100000
+      else {
+        DispatchQueue.main.async { [weak self] in
+          self?.showSettingsAlert(withError: true)
+        }
+        return
+      }
+      self.viewModel.generateFrames(count: framesCount)
+    }
+
+    alertController.addAction(cancelAction)
+    alertController.addAction(submitAction)
+
+    present(alertController, animated: true, completion: nil)
   }
 
   private func setupUI() {

@@ -272,9 +272,11 @@ extension LayersPreviewScrollView: StateDependentView {
         configure(
           with: frames.map { LayerPreviewModel(frame: $0) },
           selectionIndex: selectionIndex,
-          animated: true
+          animated: false
         )
       }
+    case .generationFlow:
+      break
     case .playing:
       alpha = 0
     }

@@ -18,7 +18,10 @@ enum ProjectEditorState {
   case generationFlow(state: GenerationFlowState)
 
   var needsAnimatedChange: Bool {
-    true
+    if case .generationFlow = self {
+      return false
+    }
+    return true
   }
 
   enum GenerationFlowState {
@@ -55,6 +58,8 @@ final class ProjectEditorViewModel: ProjectEditorViewOutput {
       format: format
     )
   }()
+
+  private var stateBeforeGeneration: ProjectEditorState?
 
   weak var view: ProjectEditorViewInput?
 
@@ -185,9 +190,20 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     updateLayersViewIfNeeded()
   }
 
-  private func updateLayersViewIfNeeded() {
-    guard case .managingFrames = state.value else { return }
-    state.send(.managingFrames(frames: frames, selectionIndex: selectedFrameIndex))
+  private func updateLayersViewIfNeeded(force: Bool = false) {
+    let action = {
+      self.state.send(
+        .managingFrames(
+          frames: self.frames,
+          selectionIndex: self.selectedFrameIndex
+        )
+      )
+    }
+    if force {
+      action()
+    } else if case .managingFrames = state.value {
+      action()
+    }
   }
 
   private func syncCurrentFrameImage() {
@@ -311,15 +327,34 @@ extension ProjectEditorViewModel: LayersPreviewDelegate {
   }
 
   func triggerGenerateFramesFlow() {
+    stateBeforeGeneration = state.value
+    state.send(.generationFlow(state: .settings))
+  }
+
+  func cancelGenerationFlow() {
+    framesGenerator.cancel()
+    if let stateBeforeGeneration {
+      state.send(stateBeforeGeneration)
+      self.stateBeforeGeneration = nil
+    } else {
+      state.send(.readyForDrawing)
+    }
+  }
+
+  func generateFrames(count: Int) {
+    state.send(.generationFlow(state: .loading))
     framesGenerator.config = drawingConfig
     framesGenerator.drawingRect = CGRect(origin: .zero, size: drawingAreaSize)
     framesGenerator.previewSize = framePreviewSize
 
-    framesGenerator.generateFrames(count: 100) { [weak self] generatedFrames in
-      guard let self else { return }
+    framesGenerator.generateFrames(count: count) { [weak self] generatedFrames in
+      guard let self,
+            case .generationFlow = state.value
+      else { return }
+
       frames.append(contentsOf: generatedFrames)
       selectedFrameIndex = frames.count - 1
-      updateLayersViewIfNeeded()
+      updateLayersViewIfNeeded(force: true)
     }
   }
 }
