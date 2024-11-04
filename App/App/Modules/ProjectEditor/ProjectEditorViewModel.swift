@@ -135,6 +135,18 @@ extension ProjectEditorViewModel: TopToolsGroupOutput, BottomToolsGroupOutput {
     drawingInteractor?.redo()
   }
 
+  func removeAll() {
+    view?.askToRemoveAll { [weak self] in
+      guard let self else { return }
+      frames.removeAll()
+      frames.append(FrameModel(image: nil, previewSize: framePreviewSize))
+      selectedFrameIndex = 0
+      drawingInteractor?.resetForNewSketch()
+      view?.updatePreviousFrame(with: nil)
+      state.send(.readyForDrawing)
+    }
+  }
+
   func removeLayer() {
     if frames.count == 1 {
       drawingInteractor?.resetForNewSketch()

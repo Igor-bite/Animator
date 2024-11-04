@@ -15,6 +15,7 @@ protocol ProjectEditorViewInput: AnyObject {
   func updateColorSelector(shouldClose: Bool)
   func updateGeometrySelector()
   func updatePreviousFrame(with image: UIImage?)
+  func askToRemoveAll(removeAction: @escaping () -> Void)
 }
 
 protocol ProjectEditorViewOutput: AnyObject,
@@ -473,6 +474,28 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
 
   func updatePreviousFrame(with image: UIImage?) {
     previousFrameImageView.image = image
+  }
+
+  func askToRemoveAll(removeAction: @escaping () -> Void) {
+    let alertController = UIAlertController(
+      title: "Вы уверены, что хотите удалить все слои?",
+      message: nil,
+      preferredStyle: .alert
+    )
+
+    let cancelAction = UIAlertAction(title: "Отменить", style: .cancel) { _ in }
+
+    let submitAction = UIAlertAction(
+      title: "Удалить",
+      style: .destructive
+    ) { _ in
+      removeAction()
+    }
+
+    alertController.addAction(cancelAction)
+    alertController.addAction(submitAction)
+
+    present(alertController, animated: true, completion: nil)
   }
 }
 

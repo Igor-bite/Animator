@@ -19,6 +19,7 @@ protocol TopToolsGroupOutput: AnyObject {
   func undo()
   func redo()
 
+  func removeAll()
   func removeLayer()
   func addNewLayer()
   func duplicateLayer()
@@ -49,9 +50,18 @@ final class TopToolsGroup: UIView {
 
   private let redoUndoStack = UIStackView()
 
+  private let removeAllLayersButton = {
+    let view = TapIcon(
+      size: .large(),
+      icon: Asset.bin.image
+    )
+    view.alpha = 0
+    return view
+  }()
+
   private let removeLayerButton = TapIcon(
     size: .large(),
-    icon: Asset.bin.image
+    icon: Asset.removeDoc.image
   )
 
   private let duplicateLayerButton = TapIcon(
@@ -126,9 +136,13 @@ final class TopToolsGroup: UIView {
       playPauseStack,
     ])
 
-    addSubview(containerStack)
+    addSubviews(containerStack, removeAllLayersButton)
     containerStack.snp.makeConstraints { make in
       make.edges.equalToSuperview()
+    }
+
+    removeAllLayersButton.snp.makeConstraints { make in
+      make.top.leading.equalToSuperview()
     }
   }
 
@@ -138,6 +152,9 @@ final class TopToolsGroup: UIView {
     }
     redoButton.addAction { [weak self] in
       self?.output?.redo()
+    }
+    removeAllLayersButton.addAction { [weak self] in
+      self?.output?.removeAll()
     }
     removeLayerButton.addAction { [weak self] in
       self?.output?.removeLayer()
@@ -202,21 +219,25 @@ extension TopToolsGroup: StateDependentView {
       redoUndoStack.alpha = 1
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 1
+      removeAllLayersButton.alpha = 0
       layersViewButton.isSelected = false
     case .drawingInProgress:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 0
+      removeAllLayersButton.alpha = 0
       layersViewButton.isSelected = false
     case .managingFrames:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 1
       playPauseStack.alpha = 0
+      removeAllLayersButton.alpha = 1
       layersViewButton.isSelected = true
     case .playing:
       redoUndoStack.alpha = 0
       layerToolsStack.alpha = 0
       playPauseStack.alpha = 1
+      removeAllLayersButton.alpha = 0
     case .generationFlow:
       break
     }

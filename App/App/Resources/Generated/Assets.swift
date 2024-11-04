@@ -38,6 +38,7 @@ internal enum Asset {
   internal static let pencil = ImageAsset(name: "pencil")
   internal static let play = ImageAsset(name: "play")
   internal static let plusFile = ImageAsset(name: "plus_file")
+  internal static let removeDoc = ImageAsset(name: "remove_doc")
   internal static let shapes = ImageAsset(name: "shapes")
   internal static let share = ImageAsset(name: "share")
   internal static let square = ImageAsset(name: "square")

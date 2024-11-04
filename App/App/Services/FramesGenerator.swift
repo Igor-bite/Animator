@@ -30,10 +30,7 @@ final class FramesGenerator {
     completion: @escaping ([FrameModel]) -> Void
   ) {
     let workitem = DispatchWorkItem { [weak self] in
-      guard let self,
-            let drawingRect,
-            let previewSize
-      else {
+      guard let self else {
         assertionFailure()
         completion([])
         return
