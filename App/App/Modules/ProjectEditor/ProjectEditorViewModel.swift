@@ -32,7 +32,7 @@ enum ProjectEditorState {
 
 final class ProjectEditorViewModel: ProjectEditorViewOutput {
   private let coordinator: ProjectEditorCoordinating
-  private let gifExporter = GIFExporter()
+  private lazy var gifExporter = GIFExporter(imageSize: drawingAreaSize)
   private let framesGenerator = FramesGenerator()
   private var frames = [FrameModel(image: nil, previewSize: .zero)] {
     didSet {

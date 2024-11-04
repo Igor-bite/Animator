@@ -6,6 +6,12 @@ import UIKit
 final class GIFExporter {
   private let queue = DispatchQueue(label: "GIFExporter.queue")
   private var gifFileUrl: URL?
+  private var imageSize: CGSize
+  private lazy var renderer = UIGraphicsImageRenderer(size: imageSize)
+
+  init(imageSize: CGSize) {
+    self.imageSize = imageSize
+  }
 
   func export(frames: [FrameModel], fps: Int) {
     gifFileUrl = nil
@@ -42,7 +48,7 @@ final class GIFExporter {
       )
 
       for frame in frames {
-        guard let frameImage = frame.image?.cgImage else { continue }
+        guard let frameImage = frame.image?.cgImage ?? self.generateEmptyImage().cgImage else { continue }
         CGImageDestinationAddImage(
           animatedGifFile,
           frameImage,
@@ -57,6 +63,10 @@ final class GIFExporter {
         }
       }
     }
+  }
+
+  private func generateEmptyImage() -> UIImage {
+    renderer.image { _ in }
   }
 
   private func showQuickLook() {
