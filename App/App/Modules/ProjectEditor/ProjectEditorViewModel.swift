@@ -307,7 +307,12 @@ extension ProjectEditorViewModel: LayersPreviewDelegate {
 
 extension ProjectEditorViewModel: GeometrySelectorViewDelegate {
   func didSelect(object: GeometryObject) {
-    drawingConfig.tool = .geometry(object)
+    if drawingConfig.selectedShape == object {
+      drawingConfig.tool = nil
+    } else {
+      drawingConfig.tool = .geometry(object)
+    }
     view?.updateGeometrySelector()
+    view?.updateLineWidthAlpha()
   }
 }

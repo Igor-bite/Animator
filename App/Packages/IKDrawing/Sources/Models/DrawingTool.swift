@@ -22,9 +22,10 @@ public enum DrawingTool: Equatable {
   }
 }
 
-public enum GeometryObject: String {
+public enum GeometryObject: String, CaseIterable {
   case triangle
   case circle
   case square
   case arrow
+  case line
 }

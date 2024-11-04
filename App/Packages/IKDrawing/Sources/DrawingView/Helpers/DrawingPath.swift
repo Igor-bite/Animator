@@ -53,7 +53,9 @@ extension DrawingPath {
     }
 
     points.insert(points[0], at: 0)
-    points.append(points.last!)
+    if let last = points.last {
+      points.append(last)
+    }
 
     let newPath = UIBezierPath()
     newPath.move(to: points[0])
@@ -83,7 +85,9 @@ extension DrawingPath {
       }
       newPath.addLine(to: point2)
     }
-    newPath.addLine(to: points.last!)
+    if let last = points.last {
+      newPath.addLine(to: last)
+    }
     newPath.lineCapStyle = .round
     return newPath
   }

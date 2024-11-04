@@ -17,32 +17,18 @@ final class GeometrySelectorView: UIView {
     blurView.isUserInteractionEnabled = false
     blurView.clipsToBounds = true
     blurView.effect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+    blurView.backgroundColor = Colors.background.withAlphaComponent(0.3)
     return blurView
   }()
 
   private lazy var iconsGroup: SelectableIconsGroup = {
-    let icons: [SelectableIconsGroupModel.IconModel] = [
+    let icons: [SelectableIconsGroupModel.IconModel] = GeometryObject.allCases.map { object in
       .init(
-        id: GeometryObject.square.rawValue,
-        icon: Asset.square.image,
-        model: GeometryObject.square
-      ),
-      .init(
-        id: GeometryObject.circle.rawValue,
-        icon: Asset.circle.image,
-        model: GeometryObject.circle
-      ),
-      .init(
-        id: GeometryObject.triangle.rawValue,
-        icon: Asset.triangle.image,
-        model: GeometryObject.triangle
-      ),
-      .init(
-        id: GeometryObject.arrow.rawValue,
-        icon: Asset.arrowUp.image,
-        model: GeometryObject.arrow
-      ),
-    ]
+        id: object.rawValue,
+        icon: object.image,
+        model: object
+      )
+    }
     let model = SelectableIconsGroupModel(
       icons: icons,
       size: .medium(),
@@ -90,7 +76,7 @@ final class GeometrySelectorView: UIView {
 
   override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
     guard alpha > 0 else { return false }
-    if iconsGroup.frame.contains(point) {
+    if blurView.frame.contains(point) {
       return true
     }
     return super.point(inside: point, with: event)
@@ -108,13 +94,28 @@ extension GeometryObject {
   var image: UIImage {
     switch self {
     case .triangle:
-      Asset.triangle.image
+      return Asset.triangle.image
     case .circle:
-      Asset.circle.image
+      return Asset.circle.image
     case .square:
-      Asset.square.image
+      return Asset.square.image
     case .arrow:
-      Asset.arrowUp.image
+      return Asset.arrowUp.image
+    case .line:
+      let format = UIGraphicsImageRendererFormat()
+      format.opaque = false
+      format.preferredRange = .standard
+      format.scale = 1
+      return UIGraphicsImageRenderer(size: .size32, format: format).image { ctx in
+        let ctx = ctx.cgContext
+        ctx.setStrokeColor(UIColor.white.cgColor)
+        ctx.setLineCap(.round)
+        ctx.setLineJoin(.round)
+        ctx.setLineWidth(2)
+        ctx.move(to: CGPoint(x: 4, y: 28))
+        ctx.addLine(to: CGPoint(x: 28, y: 4))
+        ctx.strokePath()
+      }
     }
   }
 }

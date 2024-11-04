@@ -40,7 +40,7 @@ final class DrawingTopLayer: CALayer {
 
   override func draw(in ctx: CGContext) {
     switch tool {
-    case .pen:
+    case .pen, .geometry:
       ctx.setLineWidth(lineWidth)
       ctx.setLineCap(.round)
       ctx.setLineJoin(.round)
@@ -76,16 +76,6 @@ final class DrawingTopLayer: CALayer {
       }
       ctx.setBlendMode(.sourceIn)
       ctx.drawPath(using: .fillStroke)
-    case let .geometry(object):
-      ctx.setLineWidth(lineWidth)
-      ctx.setLineCap(.round)
-      ctx.setLineJoin(.round)
-      ctx.setStrokeColor(strokeColor.cgColor)
-      if let path {
-        ctx.addPath(path)
-      }
-      ctx.setBlendMode(.normal)
-      ctx.drawPath(using: .stroke)
     }
   }
 }

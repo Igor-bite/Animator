@@ -16,6 +16,7 @@ final class ColorSelectorView: UIView {
     blurView.isUserInteractionEnabled = false
     blurView.clipsToBounds = true
     blurView.effect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+    blurView.backgroundColor = Colors.background.withAlphaComponent(0.3)
     return blurView
   }()
 
@@ -24,6 +25,7 @@ final class ColorSelectorView: UIView {
     blurView.isUserInteractionEnabled = false
     blurView.clipsToBounds = true
     blurView.effect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+    blurView.backgroundColor = Colors.background.withAlphaComponent(0.3)
     return blurView
   }()
 
@@ -51,8 +53,8 @@ final class ColorSelectorView: UIView {
   private lazy var palleteIcon = {
     let view = TapIcon(
       size: .large(),
-      icon: Asset.palette.image,
-      tint: Colors.background,
+      icon: Asset.palette.image.withRenderingMode(.alwaysTemplate),
+      tint: Colors.foreground,
       selectionType: .tint(Colors.accent)
     )
     view.addAction { [weak self] in

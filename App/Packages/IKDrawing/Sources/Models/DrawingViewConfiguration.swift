@@ -20,6 +20,17 @@ public struct DrawingViewConfiguration {
     tool != nil
   }
 
+  public var shouldOptimizeRenderingPath: Bool {
+    !isGeometry
+  }
+
+  public var isGeometry: Bool {
+    if case .geometry = tool {
+      return true
+    }
+    return false
+  }
+
   public init(
     tool: DrawingTool?,
     lineWidth: CGFloat,

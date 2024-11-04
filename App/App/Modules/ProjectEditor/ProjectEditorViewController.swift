@@ -341,7 +341,11 @@ extension ProjectEditorViewController: ProjectEditorViewInput {
     ) {
       action()
     }
-    bottomToolsView.updateShapeSelector(object: viewModel.drawingConfig.selectedShape)
+    if isGeometrySelectorVisible {
+      updateGeometrySelector()
+    } else {
+      bottomToolsView.updateShapeSelector(object: viewModel.drawingConfig.selectedShape)
+    }
     if viewModel.drawingConfig.selectedShape == nil {
       geometrySelectorView.deselect()
     }
